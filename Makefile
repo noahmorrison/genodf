@@ -1,6 +1,6 @@
 name = genodf
 compiler = mcs
-src = OpenDocument.cs Resources.cs Spreadsheet.cs
+src = src/*.cs
 
 dll = $(name).dll
 

@@ -7,10 +7,11 @@ exe = GenodfTest.exe
 all: run
 
 $(exe): $(src)
-	$(compiler) $(src) -out:$(exe) -reference:../build/genodf.dll
+	mkdir -p build/
+	$(compiler) $(src) -out:build/$(exe) -reference:../build/genodf.dll
 
 run: $(exe)
-	$(runtime) $(exe)
+	$(runtime) build/$(exe)
 
 clean:
-	rm -f $(exe)
+	rm -f build/$(exe)
