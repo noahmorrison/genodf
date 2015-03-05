@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using System.Xml;
 
 public class Spreadsheet : IOpenDocument
@@ -19,9 +20,10 @@ public class Spreadsheet : IOpenDocument
         get
         {
             var contents = new StringBuilder();
-            var settings = new XmlWriterSettings();
-            settings.ConformanceLevel = ConformanceLevel.Fragment;
-            var xml = XmlWriter.Create(contents, settings);
+            var writer = new StringWriter(contents);
+
+            var xml = new XmlTextWriter(writer);
+            xml.Formatting = Formatting.Indented;
 
             xml.WriteStartElement("office:spreadsheet");
 
