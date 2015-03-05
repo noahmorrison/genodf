@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest:manifest manifest:version="1.2" xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0">
+    <manifest:file-entry manifest:media-type="{{1}}"
+        manifest:full-path="/"/>
+    <manifest:file-entry manifest:media-type="text/xml"
+        manifest:full-path="content.xml"/>
+</manifest:manifest>
