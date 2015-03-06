@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Xml;
+using System.Linq;
 
 public class Spreadsheet : IOpenDocument
 {
@@ -46,14 +47,25 @@ public class Spreadsheet : IOpenDocument
     public Spreadsheet()
     {
         rows = new List<List<Cell>>();
-        var row = new List<Cell>();
-        row.Add(new Cell("1"));
-        row.Add(new Cell("2"));
-        rows.Add(row);
+    }
 
-        row = new List<Cell>();
-        row.Add(new Cell("=SUM(A1:C1)"));
-        rows.Add(row);
+    public void SetCell(string a1, string value)
+    {
+        var cell = new Cell(a1, value);
+        int x = cell.Column;
+        int y = cell.Row;
+        while (y >= rows.Count)
+        {
+            rows.Add(new List<Cell>());
+        }
+
+        var row = rows[y];
+        while (x >= row.Count)
+        {
+            row.Add(null);
+        }
+
+        row[x] = cell;
     }
 
     private void WriteTable(XmlWriter xml)
@@ -67,7 +79,10 @@ public class Spreadsheet : IOpenDocument
             xml.WriteStartElement("table:table-row");
             foreach (var cell in row)
             {
-                cell.Write(xml);
+                if (cell != null)
+                    cell.Write(xml);
+                else
+                    xml.WriteElementString("table:table-cell", null);
             }
             xml.WriteEndElement();  // </table:table-row>
         }
@@ -78,15 +93,55 @@ public class Spreadsheet : IOpenDocument
 class Cell
 {
     private string value;
+    public int Column { get; private set; }
+    public int Row { get; private set; }
 
-    public Cell()
+    public Cell(int column, int row)
     {
-        value = "";
+        Column = column;
+        Row = row;
     }
 
-    public Cell(string value) : this()
+    public Cell(string a1)
+    {
+        string numbers = new string(a1.SkipWhile(
+                                l => char.IsLetter(l)).ToArray());
+        string letters = new string(a1.TakeWhile(
+                                l => char.IsLetter(l)).ToArray());
+
+        Row = int.Parse(numbers) - 1;
+        Column = 0;
+        if (letters != null && letters.Length > 0)
+        {
+            Column = letters[0] - 'A';
+            for (int i = 1; i < letters.Length; i++)
+            {
+                Column *= 26;
+                Column += letters[i] - 'A';
+            }
+        }
+    }
+
+    public Cell(int column, int row, string value) : this(column, row)
     {
         this.value = value;
+    }
+
+    public Cell(string a1, string value) : this(a1)
+    {
+        this.value = value;
+    }
+
+    public string ToA1()
+    {
+        string a1 = (Row + 1).ToString();
+        int tmp = Column + 1;
+        while (--tmp >= 0)
+        {
+            a1 = (char)('A' + tmp % 26) + a1;
+            tmp /= 26;
+        }
+        return a1;
     }
 
     public void Write(XmlWriter xml)
