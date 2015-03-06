@@ -68,6 +68,18 @@ public class Spreadsheet : IOpenDocument
         row[x] = cell;
     }
 
+    public Cell GetCell(string a1)
+    {
+        var cell = new Cell(a1);
+        var x = cell.Column;
+        var y = cell.Row;
+
+        if (y < rows.Count)
+            if (x < rows[y].Count)
+                return rows[y][x];
+        return null;
+    }
+
     private void WriteTable(XmlWriter xml)
     {
         xml.WriteStartElement("table:table");
@@ -90,7 +102,7 @@ public class Spreadsheet : IOpenDocument
     }
 }
 
-class Cell
+public class Cell
 {
     private string value;
     public int Column { get; private set; }
