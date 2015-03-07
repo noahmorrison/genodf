@@ -101,13 +101,20 @@ public class Spreadsheet : IOpenDocument
         foreach (var row in rows)
         {
             xml.WriteStartElement("table:table-row");
+
+            bool hasChild = false;
             foreach (var cell in row)
             {
+                hasChild = true;
                 if (cell != null)
                     cell.Write(xml);
                 else
                     xml.WriteElementString("table:table-cell", null);
             }
+
+            if (!hasChild)
+                xml.WriteElementString("table:table-cell", null);
+
             xml.WriteEndElement();  // </table:table-row>
         }
         xml.WriteEndElement();  // </table:table>
@@ -205,8 +212,6 @@ public class Cell
         xml.WriteAttributeString("table:style-name", "CS-" + this.ToA1());
         if (value[0] == '=')
         {
-            xml.WriteAttributeString("office:value-type", "float");
-            xml.WriteAttributeString("office:value", "0.00");
             xml.WriteAttributeString("table:formula", "of:" + value);
         }
         else
