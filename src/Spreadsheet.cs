@@ -187,8 +187,18 @@ public class Cell : ITableCellProperties,
         return a1;
     }
 
+    public bool IsStyled()
+    {
+        return this.TableCellIsStyled() ||
+               this.ParagraphIsStyled() ||
+               this.TextIsStyled();
+    }
+
     public void WriteStyle(XmlWriter xml)
     {
+        if (!this.IsStyled())
+            return;
+
         xml.WriteStartElement("style:style");
         xml.WriteAttributeString("style:family", "table-cell");
         xml.WriteAttributeString("style:name", "CS-" + this.ToA1());
@@ -203,7 +213,10 @@ public class Cell : ITableCellProperties,
     public void Write(XmlWriter xml)
     {
         xml.WriteStartElement("table:table-cell");
-        xml.WriteAttributeString("table:style-name", "CS-" + this.ToA1());
+
+        if (this.IsStyled())
+            xml.WriteAttributeString("table:style-name", "CS-" + this.ToA1());
+
         if (value[0] == '=')
         {
             xml.WriteAttributeString("table:formula", "of:" + value);

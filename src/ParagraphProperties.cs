@@ -16,4 +16,11 @@ public static class ParagraphPropertiesExtension
 
         xml.WriteEndElement();
     }
+
+    public static bool ParagraphIsStyled(this IParagraphProperties props)
+    {
+        if (props.TextAlign != null)
+            return true;
+        return false;
+    }
 }

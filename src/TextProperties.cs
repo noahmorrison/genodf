@@ -22,4 +22,15 @@ public static class TextPropertiesExtension
 
         xml.WriteEndElement();
     }
+
+    public static bool TextIsStyled(this ITextProperties props)
+    {
+        if (props.Fg != null)
+            return true;
+        if (props.Bg != null)
+            return true;
+        if (props.Bold)
+            return true;
+        return false;
+    }
 }

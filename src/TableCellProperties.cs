@@ -16,4 +16,11 @@ public static class TableCellPropertiesExtension
 
         xml.WriteEndElement();
     }
+
+    public static bool TableCellIsStyled(this ITableCellProperties props)
+    {
+        if (props.Bg != null)
+            return true;
+        return false;
+    }
 }
