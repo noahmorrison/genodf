@@ -129,6 +129,7 @@ public class Cell
 
     public string Bg;
     public string Fg;
+    public string Aligned;
 
     public Cell(int column, int row)
     {
@@ -193,6 +194,12 @@ public class Cell
         {
             xml.WriteStartElement("style:table-cell-properties");
             xml.WriteAttributeString("fo:background-color", Bg);
+            xml.WriteEndElement();
+        }
+        if (Aligned != null)
+        {
+            xml.WriteStartElement("style:paragraph-properties");
+            xml.WriteAttributeString("fo:text-align", Aligned);
             xml.WriteEndElement();
         }
         if (Fg != null)
