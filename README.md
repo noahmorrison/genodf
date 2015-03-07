@@ -1,8 +1,13 @@
 # genodf
-C# project for generating conformant ODF 1.2 files (Without the hassel of UNO)
+C# project for generating
+[extended conformant ODF 1.2 files.](http://odf-validator.rhcloud.com/)
+Without the hassel of UNO.
 
+This project outputs a .NET dll that does not depend
+on any other dlls (outside of the standard library).
 
-TODO:
+---
+###TODO:###
 * Windows support
-* Styling of cells
-* Add cells outside of library (why did I push it like that?)
+* More complete styling
+* More document types
