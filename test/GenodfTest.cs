@@ -21,6 +21,10 @@ namespace Genodf
             sheet.GetCell("C4").TextAlign = "center";
             sheet.GetCell("C4").Bold = true;
 
+            sheet.SetCell("B6", "I'm really big!");
+            sheet.GetCell("B6").SpannedColumns = 2;
+            sheet.GetCell("B6").SpannedRows = 2;
+
             sheet.Write(filePath);
             Console.WriteLine("Done with test");
         }

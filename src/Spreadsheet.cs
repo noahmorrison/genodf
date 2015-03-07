@@ -133,6 +133,8 @@ public class Cell : ITableCellProperties,
     private string value;
     public int Column { get; private set; }
     public int Row { get; private set; }
+    public int SpannedRows;
+    public int SpannedColumns;
 
     public string Bg { get; set; }
     public string Fg { get; set; }
@@ -216,6 +218,11 @@ public class Cell : ITableCellProperties,
 
         if (this.IsStyled())
             xml.WriteAttributeString("table:style-name", "CS-" + this.ToA1());
+
+        if (SpannedRows > 1)
+            xml.WriteAttributeString("table:number-rows-spanned", SpannedRows.ToString());
+        if (SpannedColumns > 1)
+            xml.WriteAttributeString("table:number-columns-spanned", SpannedColumns.ToString());
 
         if (value[0] == '=')
         {
