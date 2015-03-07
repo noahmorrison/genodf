@@ -121,15 +121,18 @@ public class Spreadsheet : IOpenDocument
     }
 }
 
-public class Cell
+public class Cell : ITableCellProperties,
+                    IParagraphProperties,
+                    ITextProperties
 {
     private string value;
     public int Column { get; private set; }
     public int Row { get; private set; }
 
-    public string Bg;
-    public string Fg;
-    public string Aligned;
+    public string Bg { get; set; }
+    public string Fg { get; set; }
+    public bool Bold { get; set; }
+    public string TextAlign { get; set; }
 
     public Cell(int column, int row)
     {
@@ -190,24 +193,10 @@ public class Cell
         xml.WriteStartElement("style:style");
         xml.WriteAttributeString("style:family", "table-cell");
         xml.WriteAttributeString("style:name", "CS-" + this.ToA1());
-        if (Bg != null)
-        {
-            xml.WriteStartElement("style:table-cell-properties");
-            xml.WriteAttributeString("fo:background-color", Bg);
-            xml.WriteEndElement();
-        }
-        if (Aligned != null)
-        {
-            xml.WriteStartElement("style:paragraph-properties");
-            xml.WriteAttributeString("fo:text-align", Aligned);
-            xml.WriteEndElement();
-        }
-        if (Fg != null)
-        {
-            xml.WriteStartElement("style:text-properties");
-            xml.WriteAttributeString("fo:color", Fg);
-            xml.WriteEndElement();
-        }
+
+        this.WriteTableCellProps(xml);
+        this.WriteParagraphProps(xml);
+        this.WriteTextProps(xml);
 
         xml.WriteEndElement();
         return style.ToString();

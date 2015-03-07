@@ -18,7 +18,8 @@ namespace Genodf
 
             sheet.GetCell("C4").Bg = "#ff0000";
             sheet.GetCell("C4").Fg = "#0000ff";
-            sheet.GetCell("C4").Aligned = "center";
+            sheet.GetCell("C4").TextAlign = "center";
+            sheet.GetCell("C4").Bold = true;
 
             sheet.Write(filePath);
             Console.WriteLine("Done with test");
