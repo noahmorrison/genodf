@@ -25,6 +25,17 @@ namespace Genodf
             sheet.GetCell("B6").SpannedColumns = 2;
             sheet.GetCell("B6").SpannedRows = 2;
 
+            sheet.SetCell("B9", "all");
+            sheet.GetCell("B9").Border = true;
+            sheet.SetCell("D9", "top");
+            sheet.GetCell("D9").BorderTop = true;
+            sheet.SetCell("F9", "bottom");
+            sheet.GetCell("F9").BorderBottom = true;
+            sheet.SetCell("H9", "left");
+            sheet.GetCell("H9").BorderLeft = true;
+            sheet.SetCell("J9", "right");
+            sheet.GetCell("J9").BorderRight = true;
+
             sheet.Write(filePath);
             Console.WriteLine("Done with test");
         }

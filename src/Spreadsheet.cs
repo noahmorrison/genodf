@@ -140,6 +140,11 @@ public class Cell : ITableCellProperties,
     public string Fg { get; set; }
     public bool Bold { get; set; }
     public string TextAlign { get; set; }
+    public bool Border { get; set; }
+    public bool BorderTop { get; set; }
+    public bool BorderBottom { get; set; }
+    public bool BorderLeft { get; set; }
+    public bool BorderRight { get; set; }
 
     public Cell(int column, int row)
     {
