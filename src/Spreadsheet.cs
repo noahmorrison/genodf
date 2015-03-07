@@ -40,7 +40,12 @@ public class Spreadsheet : IOpenDocument
     {
         get
         {
-            string style = "";
+            var style = new StringBuilder();
+            var writer = new StringWriter(style);
+
+            var xml = new XmlTextWriter(writer);
+            xml.Formatting = Formatting.Indented;
+
             foreach (var row in rows)
             {
                 foreach (var cell in row)
@@ -48,11 +53,11 @@ public class Spreadsheet : IOpenDocument
                     if (cell == null)
                         continue;
 
-                    style += cell.GetStyle();
+                    cell.WriteStyle(xml);
                 }
             }
 
-            return style;
+            return style.ToString();
         }
     }
 
@@ -182,14 +187,8 @@ public class Cell : ITableCellProperties,
         return a1;
     }
 
-    public string GetStyle()
+    public void WriteStyle(XmlWriter xml)
     {
-        var style = new StringBuilder();
-        var writer = new StringWriter(style);
-
-        var xml = new XmlTextWriter(writer);
-        xml.Formatting = Formatting.Indented;
-
         xml.WriteStartElement("style:style");
         xml.WriteAttributeString("style:family", "table-cell");
         xml.WriteAttributeString("style:name", "CS-" + this.ToA1());
@@ -199,7 +198,6 @@ public class Cell : ITableCellProperties,
         this.WriteTextProps(xml);
 
         xml.WriteEndElement();
-        return style.ToString();
     }
 
     public void Write(XmlWriter xml)
