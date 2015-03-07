@@ -16,6 +16,9 @@ namespace Genodf
             sheet.SetCell("B1", "3.5");
             sheet.SetCell("C4", "=SUM(A1:B1)");
 
+            sheet.GetCell("C4").Bg = "#ff0000";
+            sheet.GetCell("C4").Fg = "#0000ff";
+
             sheet.Write(filePath);
             Console.WriteLine("Done with test");
         }

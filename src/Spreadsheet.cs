@@ -40,7 +40,19 @@ public class Spreadsheet : IOpenDocument
     {
         get
         {
-            return "";
+            string style = "";
+            foreach (var row in rows)
+            {
+                foreach (var cell in row)
+                {
+                    if (cell == null)
+                        continue;
+
+                    style += cell.GetStyle();
+                }
+            }
+
+            return style;
         }
     }
 
@@ -108,6 +120,9 @@ public class Cell
     public int Column { get; private set; }
     public int Row { get; private set; }
 
+    public string Bg;
+    public string Fg;
+
     public Cell(int column, int row)
     {
         Column = column;
@@ -156,9 +171,38 @@ public class Cell
         return a1;
     }
 
+    public string GetStyle()
+    {
+        var style = new StringBuilder();
+        var writer = new StringWriter(style);
+
+        var xml = new XmlTextWriter(writer);
+        xml.Formatting = Formatting.Indented;
+
+        xml.WriteStartElement("style:style");
+        xml.WriteAttributeString("style:family", "table-cell");
+        xml.WriteAttributeString("style:name", "CS-" + this.ToA1());
+        if (Bg != null)
+        {
+            xml.WriteStartElement("style:table-cell-properties");
+            xml.WriteAttributeString("fo:background-color", Bg);
+            xml.WriteEndElement();
+        }
+        if (Fg != null)
+        {
+            xml.WriteStartElement("style:text-properties");
+            xml.WriteAttributeString("fo:color", Fg);
+            xml.WriteEndElement();
+        }
+
+        xml.WriteEndElement();
+        return style.ToString();
+    }
+
     public void Write(XmlWriter xml)
     {
         xml.WriteStartElement("table:table-cell");
+        xml.WriteAttributeString("table:style-name", "CS-" + this.ToA1());
         if (value[0] == '=')
         {
             xml.WriteAttributeString("office:value-type", "float");
