@@ -239,7 +239,7 @@ public class Cell : ITableCellProperties,
             else
             {
                 xml.WriteAttributeString("office:value-type", "string");
-                xml.WriteAttributeString("office:value", value);
+                xml.WriteElementString("text:p", value);
             }
         }
         xml.WriteEndElement();  // </table:table-cell>
