@@ -1,9 +1,11 @@
 using System;
 using System.IO;
 
-namespace Genodf
+using Genodf;
+
+namespace GenodfTest
 {
-    public class Genodf
+    public class GenodfTest
     {
         public static void Main()
         {

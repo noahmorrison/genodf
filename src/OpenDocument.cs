@@ -7,67 +7,70 @@ using System.Linq;
 using ICSharpCode.SharpZipLib.Zip;
 
 
-public interface IOpenDocument
+namespace Genodf
 {
-    string Mimetype {get;}
-    string Body {get;}
-    string Style {get;}
-}
-
-
-public static class OpenDocumentExtension
-{
-    public static void Initialize(this IOpenDocument doc)
+    public interface IOpenDocument
     {
-        AppDomain.CurrentDomain.AssemblyResolve += (sender, bargs) =>
-        {
-            String dllName = new AssemblyName(bargs.Name).Name + ".dll";
-            String resourceName = Resources.Names().FirstOrDefault(rn => rn.EndsWith(dllName));
-            if (resourceName == null)
-                return null;
+        string Mimetype { get; }
+        string Body { get; }
+        string Style { get; }
+    }
 
-            var assem = Assembly.GetExecutingAssembly();
-            using (var stream = assem.GetManifestResourceStream(resourceName))
+
+    public static class OpenDocumentExtension
+    {
+        public static void Initialize(this IOpenDocument doc)
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, bargs) =>
             {
-                Byte[] assemblyData = new Byte[stream.Length];
-                stream.Read(assemblyData, 0, assemblyData.Length);
-                return Assembly.Load(assemblyData);
-            }
-        };
-    }
+                String dllName = new AssemblyName(bargs.Name).Name + ".dll";
+                String resourceName = Resources.Names().FirstOrDefault(rn => rn.EndsWith(dllName));
+                if (resourceName == null)
+                    return null;
 
-    public static void Write(this IOpenDocument doc, string filePath)
-    {
-        var content = Resources.Get("content.xml", doc.Style, doc.Body);
-        var manifest = Resources.Get("manifest.xml", doc.Mimetype);
-
-        File.Delete(filePath);
-        using (var zip = new ZipOutputStream(File.Create(filePath)))
-        {
-            zip.UseZip64 = UseZip64.Off;
-
-            Add(zip, "mimetype", doc.Mimetype);
-            Add(zip, "content.xml", content);
-            Add(zip, "META-INF/manifest.xml", manifest);
-
-            zip.Finish();
-            zip.Close();
+                var assem = Assembly.GetExecutingAssembly();
+                using (var stream = assem.GetManifestResourceStream(resourceName))
+                {
+                    Byte[] assemblyData = new Byte[stream.Length];
+                    stream.Read(assemblyData, 0, assemblyData.Length);
+                    return Assembly.Load(assemblyData);
+                }
+            };
         }
-    }
 
-    private static void Add(ZipOutputStream zip, string name, string data)
-    {
-        var entry = new ZipEntry(name);
+        public static void Write(this IOpenDocument doc, string filePath)
+        {
+            var content = Resources.Get("content.xml", doc.Style, doc.Body);
+            var manifest = Resources.Get("manifest.xml", doc.Mimetype);
 
-        if (name == "mimetype")
-            entry.CompressionMethod = CompressionMethod.Stored;
+            File.Delete(filePath);
+            using (var zip = new ZipOutputStream(File.Create(filePath)))
+            {
+                zip.UseZip64 = UseZip64.Off;
 
-        zip.PutNextEntry(entry);
+                Add(zip, "mimetype", doc.Mimetype);
+                Add(zip, "content.xml", content);
+                Add(zip, "META-INF/manifest.xml", manifest);
 
-        var writer = new StreamWriter(zip);
-        writer.Write(data);
+                zip.Finish();
+                zip.Close();
+            }
+        }
 
-        writer.Flush();
-        zip.CloseEntry();
+        private static void Add(ZipOutputStream zip, string name, string data)
+        {
+            var entry = new ZipEntry(name);
+
+            if (name == "mimetype")
+                entry.CompressionMethod = CompressionMethod.Stored;
+
+            zip.PutNextEntry(entry);
+
+            var writer = new StreamWriter(zip);
+            writer.Write(data);
+
+            writer.Flush();
+            zip.CloseEntry();
+        }
     }
 }
