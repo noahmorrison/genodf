@@ -1,0 +1,21 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C# Express 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Genodf", "Genodf.csproj", "{EC40ACB0-A6B9-4776-9078-B1D72D244787}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenodfTest", "GenodfTest.csproj", "{C72DBE42-0921-46AC-A94E-370B53624914}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC40ACB0-A6B9-4776-9078-B1D72D244787}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC40ACB0-A6B9-4776-9078-B1D72D244787}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C72DBE42-0921-46AC-A94E-370B53624914}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C72DBE42-0921-46AC-A94E-370B53624914}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

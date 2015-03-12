@@ -8,8 +8,9 @@ namespace Genodf
         public static void Main()
         {
             var cwd = Directory.GetCurrentDirectory();
-            var build = Path.Combine(cwd, "build");
-            var filePath = Path.Combine(build, "genodf.ods");
+            if (!cwd.EndsWith("build"))
+                cwd = Path.Combine(cwd, "build");
+            var filePath = Path.Combine(cwd, "genodf.ods");
 
             var sheet = new Spreadsheet();
             sheet.SetCell("A1", "2.5");
