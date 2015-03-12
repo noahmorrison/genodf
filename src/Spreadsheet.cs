@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml;
 using System.Linq;
 
+
 namespace Genodf
 {
     public class Spreadsheet : IOpenDocument
@@ -85,6 +86,23 @@ namespace Genodf
             }
 
             row[x] = cell;
+        }
+
+        public void SetCell(int column, int row, string value)
+        {
+            this.SetCell(Spreadsheet.ToA1(column, row), value);
+        }
+
+        public static string ToA1(int column, int row)
+        {
+            string a1 = (row + 1).ToString();
+            int tmp = column + 1;
+            while (--tmp >= 0)
+            {
+                a1 = (char)('A' + tmp % 26) + a1;
+                tmp /= 26;
+            }
+            return a1;
         }
 
         public Cell GetCell(string a1)
@@ -188,14 +206,7 @@ namespace Genodf
 
         public string ToA1()
         {
-            string a1 = (Row + 1).ToString();
-            int tmp = Column + 1;
-            while (--tmp >= 0)
-            {
-                a1 = (char)('A' + tmp % 26) + a1;
-                tmp /= 26;
-            }
-            return a1;
+            return Spreadsheet.ToA1(Column, Row);
         }
 
         public bool IsStyled()
