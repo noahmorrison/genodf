@@ -15,7 +15,6 @@ namespace GenodfTest
             var filePath = Path.Combine(cwd, "genodf.ods");
 
             var sheet = new Spreadsheet();
-            sheet.Initialize();
             sheet.SetCell("A1", "2.5");
             sheet.SetCell("B1", "3.5");
             sheet.SetCell("C4", "=SUM(A1:B1)");

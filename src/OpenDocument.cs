@@ -19,25 +19,6 @@ namespace Genodf
 
     public static class OpenDocumentExtension
     {
-        public static void Initialize(this IOpenDocument doc)
-        {
-            AppDomain.CurrentDomain.AssemblyResolve += (sender, bargs) =>
-            {
-                String dllName = new AssemblyName(bargs.Name).Name + ".dll";
-                String resourceName = Resources.Names().FirstOrDefault(rn => rn.EndsWith(dllName));
-                if (resourceName == null)
-                    return null;
-
-                var assem = Assembly.GetExecutingAssembly();
-                using (var stream = assem.GetManifestResourceStream(resourceName))
-                {
-                    Byte[] assemblyData = new Byte[stream.Length];
-                    stream.Read(assemblyData, 0, assemblyData.Length);
-                    return Assembly.Load(assemblyData);
-                }
-            };
-        }
-
         public static void Write(this IOpenDocument doc, string filePath)
         {
             var content = Resources.Get("content.xml", doc.Style, doc.Body);
