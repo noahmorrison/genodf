@@ -39,6 +39,12 @@ namespace GenodfTest
             sheet.SetCell("J9", "right");
             sheet.GetCell("J9").BorderRight = true;
 
+            var notSet = sheet.GetCell("E1");
+            notSet.value = "hey!";
+
+            var neverSet = sheet.GetCell("F1");
+            neverSet.Bg = "#aa55aa";
+
             sheet.Write(filePath);
             Console.WriteLine("Done with test");
         }

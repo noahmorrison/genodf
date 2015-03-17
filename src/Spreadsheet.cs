@@ -114,7 +114,10 @@ namespace Genodf
             if (y < rows.Count)
                 if (x < rows[y].Count)
                     return rows[y][x];
-            return null;
+
+            this.SetCell(a1, "");
+            return this.GetCell(a1);
+        }
 
         public Cell GetCell(int column, int row)
         {
@@ -154,7 +157,7 @@ namespace Genodf
                         IParagraphProperties,
                         ITextProperties
     {
-        private string value;
+        public string value;
         public int Column { get; private set; }
         public int Row { get; private set; }
         public int SpannedRows;
@@ -247,6 +250,12 @@ namespace Genodf
                 xml.WriteAttributeString("table:number-rows-spanned", SpannedRows.ToString());
             if (SpannedColumns > 1)
                 xml.WriteAttributeString("table:number-columns-spanned", SpannedColumns.ToString());
+
+            if (value == null || value == "")
+            {
+                xml.WriteEndElement();
+                return;
+            }
 
             if (value[0] == '=')
             {
