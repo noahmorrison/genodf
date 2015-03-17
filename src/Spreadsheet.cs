@@ -115,6 +115,10 @@ namespace Genodf
                 if (x < rows[y].Count)
                     return rows[y][x];
             return null;
+
+        public Cell GetCell(int column, int row)
+        {
+            return this.GetCell(Spreadsheet.ToA1(column, row));
         }
 
         private void WriteTable(XmlWriter xml)
