@@ -19,8 +19,6 @@ public static class ParagraphPropertiesExtension
 
     public static bool ParagraphIsStyled(this IParagraphProperties props)
     {
-        if (props.TextAlign != null)
-            return true;
-        return false;
+        return props.TextAlign != null;
     }
 }

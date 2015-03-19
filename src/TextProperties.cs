@@ -25,12 +25,8 @@ public static class TextPropertiesExtension
 
     public static bool TextIsStyled(this ITextProperties props)
     {
-        if (props.Fg != null)
-            return true;
-        if (props.Bg != null)
-            return true;
-        if (props.Bold)
-            return true;
-        return false;
+        return props.Fg != null
+            || props.Bg != null
+            || props.Bold;
     }
 }

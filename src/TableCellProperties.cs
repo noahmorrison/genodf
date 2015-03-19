@@ -34,18 +34,11 @@ public static class TableCellPropertiesExtension
 
     public static bool TableCellIsStyled(this ITableCellProperties props)
     {
-        if (props.Bg != null)
-            return true;
-        if (props.Border)
-            return true;
-        if (props.BorderTop)
-            return true;
-        if (props.BorderBottom)
-            return true;
-        if (props.BorderLeft)
-            return true;
-        if (props.BorderRight)
-            return true;
-        return false;
+        return props.Bg != null
+            || props.Border
+            || props.BorderTop
+            || props.BorderBottom
+            || props.BorderLeft
+            || props.BorderRight;
     }
 }
