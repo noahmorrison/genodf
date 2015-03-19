@@ -7,7 +7,6 @@ This project outputs a .NET dll.
 
 ---
 ###TODO:###
-* Windows support
 * More complete styling
 * More document types
 
