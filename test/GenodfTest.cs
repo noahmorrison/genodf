@@ -45,6 +45,8 @@ namespace GenodfTest
             var neverSet = sheet.GetCell("F1");
             neverSet.Bg = "#aa55aa";
 
+            sheet.GetColumn(5).Width = 0.5;
+
             sheet.Write(filePath);
             Console.WriteLine("Done with test");
         }

@@ -11,6 +11,7 @@ namespace Genodf
     {
         private string Name = "test";
         private List<List<Cell>> rows;
+        private List<Column> columns;
 
         public string Mimetype
         {
@@ -49,6 +50,9 @@ namespace Genodf
                 var xml = new XmlTextWriter(writer);
                 xml.Formatting = Formatting.Indented;
 
+                foreach (var column in columns)
+                    column.WriteStyle(xml);
+
                 foreach (var row in rows)
                 {
                     foreach (var cell in row)
@@ -67,6 +71,7 @@ namespace Genodf
         public Spreadsheet()
         {
             rows = new List<List<Cell>>();
+            columns = new List<Column>();
         }
 
         public void SetCell(string a1, string value)
@@ -91,6 +96,12 @@ namespace Genodf
         public void SetCell(int column, int row, string value)
         {
             this.SetCell(Spreadsheet.ToA1(column, row), value);
+        }
+
+        public void SetColumn(int column)
+        {
+            for (int y = columns.Count; column >= columns.Count; y++)
+                columns.Add(new Column(y));
         }
 
         public static string ToA1(int column, int row)
@@ -124,12 +135,23 @@ namespace Genodf
             return this.GetCell(Spreadsheet.ToA1(column, row));
         }
 
+        public Column GetColumn(int column)
+        {
+            if (column < columns.Count)
+                return columns[column];
+
+            this.SetColumn(column);
+            return this.GetColumn(column);
+        }
+
         private void WriteTable(XmlWriter xml)
         {
             xml.WriteStartElement("table:table");
             xml.WriteAttributeString("table:name", Name);
 
-            xml.WriteElementString("table:table-column", null);
+            foreach (var column in columns)
+                column.Write(xml);
+
             foreach (var row in rows)
             {
                 xml.WriteStartElement("table:table-row");
@@ -276,6 +298,47 @@ namespace Genodf
                 }
             }
             xml.WriteEndElement();  // </table:table-cell>
+        }
+    }
+
+    public class Column : ITableColumnProperties
+    {
+        private int index;
+
+        public double? Width { get; set; }
+
+        public Column(int index)
+        {
+            this.index = index;
+        }
+
+        public bool IsStyled()
+        {
+            return this.TableColumnIsStyled();
+        }
+
+        public void WriteStyle(XmlWriter xml)
+        {
+            if (!this.IsStyled())
+                return;
+
+            xml.WriteStartElement("style:style");
+            xml.WriteAttributeString("style:family", "table-column");
+            xml.WriteAttributeString("style:name", "co" + this.index);
+
+            this.WriteTableColumnProps(xml);
+
+            xml.WriteEndElement();
+        }
+
+        public void Write(XmlWriter xml)
+        {
+            xml.WriteStartElement("table:table-column");
+
+            if (this.IsStyled())
+                xml.WriteAttributeString("table:style-name", "co" + this.index);
+
+            xml.WriteEndElement();
         }
     }
 }
