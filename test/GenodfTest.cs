@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 
 using Genodf;
 
@@ -9,10 +10,9 @@ namespace GenodfTest
     {
         public static void Main()
         {
-            var cwd = Directory.GetCurrentDirectory();
-            if (!cwd.EndsWith("build"))
-                cwd = Path.Combine(cwd, "build");
-            var filePath = Path.Combine(cwd, "genodf.ods");
+            var path = Assembly.GetExecutingAssembly().Location;
+            var dir = Path.GetDirectoryName(path);
+            var filePath = Path.Combine(dir, "genodf.ods");
 
             var sheet = new Spreadsheet();
             sheet.SetCell("A1", "2.5");
