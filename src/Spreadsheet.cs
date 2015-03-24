@@ -135,7 +135,7 @@ namespace Genodf
                 if (col < rows[row].Count)
                     return rows[row][col];
 
-            this.SetCell(a1, "");
+            this.SetCell(a1, string.Empty);
             return this.GetCell(a1);
         }
 
@@ -270,7 +270,7 @@ namespace Genodf
             if (SpannedColumns > 1)
                 xml.WriteAttributeString("table:number-columns-spanned", SpannedColumns.ToString());
 
-            if (value == null || value == "")
+            if (string.IsNullOrEmpty(value))
             {
                 xml.WriteEndElement();
                 return;

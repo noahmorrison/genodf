@@ -15,9 +15,7 @@ public static class Resources
         using (Stream stream = assembly.GetManifestResourceStream(name))
         {
             if (stream == null)
-            {
-                return "";
-            }
+                return string.Empty;
 
             using (StreamReader reader = new StreamReader(stream))
             {
