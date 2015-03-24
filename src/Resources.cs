@@ -1,16 +1,17 @@
 using System.IO;
+using System.Reflection;
 
 public static class Resources
 {
     public static string[] Names()
     {
-        return System.Reflection.Assembly.GetExecutingAssembly()
-                .GetManifestResourceNames();
+        return Assembly.GetExecutingAssembly()
+                       .GetManifestResourceNames();
     }
 
     public static string Get(string name, params string[] args)
     {
-        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+        var assembly = Assembly.GetExecutingAssembly();
 
         using (Stream stream = assembly.GetManifestResourceStream(name))
         {

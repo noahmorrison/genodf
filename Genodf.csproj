@@ -18,11 +18,13 @@
   <ItemGroup>
     <Compile Include="src\OpenDocument.cs" />
     <Compile Include="src\Resources.cs" />
-    <Compile Include="src\Spreadsheet.cs" />
-    <Compile Include="src\ParagraphProperties.cs" />
-    <Compile Include="src\TableCellProperties.cs" />
-    <Compile Include="src\TableColumnProperties.cs" />
-    <Compile Include="src\TextProperties.cs" />
+    <Compile Include="src\Spreadsheet\Cell.cs" />
+    <Compile Include="src\Spreadsheet\Column.cs" />
+    <Compile Include="src\Spreadsheet\Spreadsheet.cs" />
+    <Compile Include="src\Properties\ParagraphProperties.cs" />
+    <Compile Include="src\Properties\TableCellProperties.cs" />
+    <Compile Include="src\Properties\TableColumnProperties.cs" />
+    <Compile Include="src\Properties\TextProperties.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
