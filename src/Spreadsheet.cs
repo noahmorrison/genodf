@@ -76,21 +76,15 @@ namespace Genodf
 
         public void SetCell(string a1, string value)
         {
-            var cell = new Cell(a1, value);
-            int x = cell.Column;
-            int y = cell.Row;
-            while (y >= rows.Count)
-            {
+            int col, row;
+            Spreadsheet.FromA1(a1, out col, out row);
+            while (row >= rows.Count)
                 rows.Add(new List<Cell>());
-            }
 
-            var row = rows[y];
-            while (x >= row.Count)
-            {
-                row.Add(null);
-            }
+            while (col >= rows[row].Count)
+                rows[row].Add(null);
 
-            row[x] = cell;
+            rows[row][col] = new Cell(col, row, value);
         }
 
         public void SetCell(int column, int row, string value)
@@ -116,15 +110,30 @@ namespace Genodf
             return a1;
         }
 
+        public static void FromA1(string a1, out int col, out int row)
+        {
+            int.TryParse(new string(a1.ToCharArray()
+                                      .SkipWhile(c => !char.IsDigit(c))
+                                      .ToArray()), out row);
+            row--;
+
+            var a = new string(a1.ToCharArray()
+                                 .TakeWhile(c => char.IsLetter(c))
+                                 .ToArray());
+            col = 0;
+            foreach (char c in a.ToUpper())
+                col = (26*col) + (c-'A') + 1;
+            col--;
+        }
+
         public Cell GetCell(string a1)
         {
-            var cell = new Cell(a1);
-            var x = cell.Column;
-            var y = cell.Row;
+            int col, row;
+            Spreadsheet.FromA1(a1, out col, out row);
 
-            if (y < rows.Count)
-                if (x < rows[y].Count)
-                    return rows[y][x];
+            if (row < rows.Count)
+                if (col < rows[row].Count)
+                    return rows[row][col];
 
             this.SetCell(a1, "");
             return this.GetCell(a1);
@@ -203,22 +212,10 @@ namespace Genodf
 
         public Cell(string a1)
         {
-            string numbers = new string(a1.SkipWhile(
-                                    l => char.IsLetter(l)).ToArray());
-            string letters = new string(a1.TakeWhile(
-                                    l => char.IsLetter(l)).ToArray());
-
-            Row = int.Parse(numbers) - 1;
-            Column = 0;
-            if (letters != null && letters.Length > 0)
-            {
-                Column = letters[0] - 'A';
-                for (int i = 1; i < letters.Length; i++)
-                {
-                    Column *= 26;
-                    Column += letters[i] - 'A';
-                }
-            }
+            int col, row;
+            Spreadsheet.FromA1(a1, out col, out row);
+            Column = col;
+            Row = row;
         }
 
         public Cell(int column, int row, string value)

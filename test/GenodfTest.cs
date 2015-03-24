@@ -47,6 +47,8 @@ namespace GenodfTest
 
             sheet.GetColumn(5).Width = 0.5;
 
+            sheet.SetCell("AU171", "wow, I'm far out");
+
             sheet.Write(filePath);
             Console.WriteLine("Done with test");
         }
