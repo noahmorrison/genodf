@@ -1,6 +1,6 @@
 name = genodf
 compiler = mcs
-src = src/*.cs
+src = $(shell find src/* -type f)
 
 dll = $(name).dll
 
