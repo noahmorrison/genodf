@@ -133,7 +133,7 @@ namespace Genodf
 
             if (row < rows.Count)
                 if (col < rows[row].Count)
-                    return rows[row][col] ?? new Cell(col, row);
+                    return rows[row][col] ?? (rows[row][col] = new Cell(col, row));
 
             this.SetCell(a1, string.Empty);
             return this.GetCell(a1);
