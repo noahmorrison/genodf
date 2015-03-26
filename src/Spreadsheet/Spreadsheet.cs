@@ -176,6 +176,13 @@ namespace Genodf
             return this.GetColumn(column);
         }
 
+        public Column GetColumn(string a1)
+        {
+            int column, row;
+            FromA1(a1 + "1", out column, out row);
+            return GetColumn(column);
+        }
+
         private void WriteTable(XmlWriter xml)
         {
             xml.WriteStartElement("table:table");
