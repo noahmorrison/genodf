@@ -133,7 +133,7 @@ namespace Genodf
 
             if (row < rows.Count)
                 if (col < rows[row].Count)
-                    return rows[row][col];
+                    return rows[row][col] ?? new Cell(col, row);
 
             this.SetCell(a1, string.Empty);
             return this.GetCell(a1);
@@ -142,6 +142,29 @@ namespace Genodf
         public Cell GetCell(int column, int row)
         {
             return this.GetCell(Spreadsheet.ToA1(column, row));
+        }
+
+        public List<Cell> GetCells(string a1)
+        {
+            var cells = new List<Cell>();
+
+            var topLeftA1 = a1.Split(':')[0];
+            var bottomRightA1 = a1.Split(':')[1];
+
+            int column, row;
+            FromA1(topLeftA1, out column, out row);
+
+            int tmp1, tmp2;
+            FromA1(bottomRightA1, out tmp1, out tmp2);
+
+            int width = tmp1 - column;
+            int height = tmp2 - row;
+
+            for (var x = column; x <= column + width; x++)
+                for (var y = row; y <= row + height; y++)
+                    cells.Add(GetCell(x, y));
+
+            return cells;
         }
 
         public Column GetColumn(int column)

@@ -49,6 +49,8 @@ namespace GenodfTest
 
             sheet.SetCell("AU171", "wow, I'm far out");
 
+            sheet.GetCells("a2:h2").ForEach(c => c.Bg = "#000000");
+
             sheet.Write(filePath);
             Console.WriteLine("Done with test");
         }
