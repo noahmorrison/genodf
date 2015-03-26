@@ -146,8 +146,6 @@ namespace Genodf
 
         public List<Cell> GetCells(string a1)
         {
-            var cells = new List<Cell>();
-
             var topLeftA1 = a1.Split(':')[0];
             var bottomRightA1 = a1.Split(':')[1];
 
@@ -157,11 +155,18 @@ namespace Genodf
             int tmp1, tmp2;
             FromA1(bottomRightA1, out tmp1, out tmp2);
 
-            int width = tmp1 - column;
-            int height = tmp2 - row;
+            int width = tmp1 - column + 1;
+            int height = tmp2 - row + 1;
 
-            for (var x = column; x <= column + width; x++)
-                for (var y = row; y <= row + height; y++)
+            return GetCells(column, row, width, height);
+        }
+
+        public List<Cell> GetCells(int column, int row, int width, int height)
+        {
+            var cells = new List<Cell>();
+
+            for (var x = column; x < column + width; x++)
+                for (var y = row; y < row + height; y++)
                     cells.Add(GetCell(x, y));
 
             return cells;
