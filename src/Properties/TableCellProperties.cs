@@ -19,15 +19,15 @@ public static class TableCellPropertiesExtension
         if (props.Bg != null)
             xml.WriteAttributeString("fo:background-color", props.Bg);
         if (props.Border)
-            xml.WriteAttributeString("fo:border", "00.6pt solid #000000");
+            xml.WriteAttributeString("fo:border", "0.3pt solid #000000");
         if (props.BorderTop)
-            xml.WriteAttributeString("fo:border-top", "00.6pt solid #000000");
+            xml.WriteAttributeString("fo:border-top", "0.3pt solid #000000");
         if (props.BorderBottom)
-            xml.WriteAttributeString("fo:border-bottom", "00.6pt solid #000000");
+            xml.WriteAttributeString("fo:border-bottom", "0.3pt solid #000000");
         if (props.BorderLeft)
-            xml.WriteAttributeString("fo:border-left", "00.6pt solid #000000");
+            xml.WriteAttributeString("fo:border-left", "0.3pt solid #000000");
         if (props.BorderRight)
-            xml.WriteAttributeString("fo:border-right", "00.6pt solid #000000");
+            xml.WriteAttributeString("fo:border-right", "0.3pt solid #000000");
 
         xml.WriteEndElement();
     }
