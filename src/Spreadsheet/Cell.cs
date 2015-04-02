@@ -11,6 +11,7 @@ namespace Genodf
         public int Row { get; private set; }
         public int SpannedRows;
         public int SpannedColumns;
+        public string ValueType;
 
         public string Bg { get; set; }
         public string Fg { get; set; }
@@ -103,12 +104,20 @@ namespace Genodf
                 double tmp;
                 if (double.TryParse(value, out tmp))
                 {
-                    xml.WriteAttributeString("office:value-type", "float");
+                    if (string.IsNullOrEmpty(ValueType))
+                        xml.WriteAttributeString("office:value-type", "float");
+                    else
+                        xml.WriteAttributeString("office:value-type", ValueType);
+
                     xml.WriteAttributeString("office:value", tmp.ToString());
                 }
                 else
                 {
-                    xml.WriteAttributeString("office:value-type", "string");
+                    if (string.IsNullOrEmpty(ValueType))
+                        xml.WriteAttributeString("office:value-type", "string");
+                    else
+                        xml.WriteAttributeString("office:value-type", ValueType);
+
                     xml.WriteElementString("text:p", value);
                 }
             }
