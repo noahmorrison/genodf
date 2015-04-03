@@ -1,5 +1,5 @@
 name = genodf
-compiler = mcs
+compiler = mcs -keyfile:genodf.snk
 src = $(shell find src/* -type f)
 
 dll = $(name).dll
