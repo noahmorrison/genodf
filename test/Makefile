@@ -14,4 +14,4 @@ run: $(exe)
 	$(runtime) build/$(exe)
 
 clean:
-	rm -f build/$(exe)
+	rm -f build/*

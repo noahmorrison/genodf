@@ -19,4 +19,4 @@ $(dll): $(src)
 	cp -r references/* build/
 
 clean:
-	rm -f build/$(dll)
+	rm -f build/*
