@@ -95,32 +95,41 @@ namespace Genodf
                 return;
             }
 
-            if (value[0] == '=')
-            {
-                xml.WriteAttributeString("table:formula", "of:" + value);
-            }
-            else
+            var type = "";
+            if (string.IsNullOrEmpty(ValueType))
             {
                 double tmp;
-                if (double.TryParse(value, out tmp))
-                {
-                    if (string.IsNullOrEmpty(ValueType))
-                        xml.WriteAttributeString("office:value-type", "float");
-                    else
-                        xml.WriteAttributeString("office:value-type", ValueType);
+                if (value[0] == '=')
+                    type = "function";
 
-                    xml.WriteAttributeString("office:value", tmp.ToString());
-                }
+                else if (double.TryParse(value, out tmp))
+                    type = "float";
+
                 else
-                {
-                    if (string.IsNullOrEmpty(ValueType))
-                        xml.WriteAttributeString("office:value-type", "string");
-                    else
-                        xml.WriteAttributeString("office:value-type", ValueType);
-
-                    xml.WriteElementString("text:p", value);
-                }
+                    type = "string";
             }
+            else
+                type = ValueType;
+
+            xml.WriteAttributeString("office:value-type", type);
+            switch (type)
+            {
+                case "function":
+                    xml.WriteAttributeString("table:formula", "of:" + value);
+                    break;
+
+                case "float":
+                    xml.WriteAttributeString("office:value", value);
+                    break;
+
+                case "string":
+                    xml.WriteElementString("text:p", value);
+                    break;
+
+                default:
+                    break;
+            }
+
             xml.WriteEndElement();  // </table:table-cell>
         }
     }
