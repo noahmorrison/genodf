@@ -9,7 +9,7 @@ namespace Genodf
 {
     public class Spreadsheet : IOpenDocument
     {
-        private string Name = "test";
+        public string Name = "test";
         private List<List<Cell>> rows;
         private List<Column> columns;
 
