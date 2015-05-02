@@ -3,8 +3,8 @@
 namespace Genodf
 {
     public class Cell : ITableCellProperties,
-                    IParagraphProperties,
-                    ITextProperties
+                        IParagraphProperties,
+                        ITextProperties
     {
         public string value;
         public int Column { get; private set; }
@@ -13,6 +13,7 @@ namespace Genodf
         public int SpannedColumns;
         public string ValueType;
 
+        #region Properties
         public string Bg { get; set; }
         public string Fg { get; set; }
         public bool Bold { get; set; }
@@ -22,6 +23,7 @@ namespace Genodf
         public bool BorderBottom { get; set; }
         public bool BorderLeft { get; set; }
         public bool BorderRight { get; set; }
+        #endregion
 
         public Cell(int column, int row)
         {
