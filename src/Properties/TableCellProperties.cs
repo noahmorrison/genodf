@@ -10,9 +10,9 @@ public interface ITableCellProperties
     bool BorderRight {get; set;}
 }
 
-public static class TableCellPropertiesExtension
+internal static class TableCellPropertiesExtension
 {
-    public static void WriteTableCellProps(this ITableCellProperties props, XmlWriter xml)
+    internal static void WriteTableCellProps(this ITableCellProperties props, XmlWriter xml)
     {
         xml.WriteStartElement("style:table-cell-properties");
 
@@ -32,7 +32,7 @@ public static class TableCellPropertiesExtension
         xml.WriteEndElement();
     }
 
-    public static bool TableCellIsStyled(this ITableCellProperties props)
+    internal static bool TableCellIsStyled(this ITableCellProperties props)
     {
         return props.Bg != null
             || props.Border

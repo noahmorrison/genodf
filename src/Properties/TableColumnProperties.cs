@@ -5,9 +5,9 @@ public interface ITableColumnProperties
     double? Width { get; set; }
 }
 
-public static class TableColumnPropertiesExtension
+internal static class TableColumnPropertiesExtension
 {
-    public static void WriteTableColumnProps(this ITableColumnProperties props, XmlWriter xml)
+    internal static void WriteTableColumnProps(this ITableColumnProperties props, XmlWriter xml)
     {
         xml.WriteStartElement("style:table-column-properties");
 
@@ -17,7 +17,7 @@ public static class TableColumnPropertiesExtension
         xml.WriteEndElement();
     }
 
-    public static bool TableColumnIsStyled(this ITableColumnProperties props)
+    internal static bool TableColumnIsStyled(this ITableColumnProperties props)
     {
         return props.Width != null;
     }

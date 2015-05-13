@@ -7,9 +7,9 @@ public interface ITextProperties
     bool Bold { get; set; }
 }
 
-public static class TextPropertiesExtension
+internal static class TextPropertiesExtension
 {
-    public static void WriteTextProps(this ITextProperties props, XmlWriter xml)
+    internal static void WriteTextProps(this ITextProperties props, XmlWriter xml)
     {
         xml.WriteStartElement("style:text-properties");
 
@@ -23,7 +23,7 @@ public static class TextPropertiesExtension
         xml.WriteEndElement();
     }
 
-    public static bool TextIsStyled(this ITextProperties props)
+    internal static bool TextIsStyled(this ITextProperties props)
     {
         return props.Fg != null
             || props.Bg != null

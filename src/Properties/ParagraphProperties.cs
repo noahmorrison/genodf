@@ -5,9 +5,9 @@ public interface IParagraphProperties
     string TextAlign { get; set; }
 }
 
-public static class ParagraphPropertiesExtension
+internal static class ParagraphPropertiesExtension
 {
-    public static void WriteParagraphProps(this IParagraphProperties props, XmlWriter xml)
+    internal static void WriteParagraphProps(this IParagraphProperties props, XmlWriter xml)
     {
         xml.WriteStartElement("style:paragraph-properties");
 
@@ -17,7 +17,7 @@ public static class ParagraphPropertiesExtension
         xml.WriteEndElement();
     }
 
-    public static bool ParagraphIsStyled(this IParagraphProperties props)
+    internal static bool ParagraphIsStyled(this IParagraphProperties props)
     {
         return props.TextAlign != null;
     }
