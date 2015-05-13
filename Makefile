@@ -1,5 +1,6 @@
 name = genodf
-compiler = mcs -keyfile:genodf.snk
+compiler = mcs
+override args += -keyfile:genodf.snk
 src = $(shell find src/* -type f)
 
 dll = $(name).dll
@@ -15,7 +16,7 @@ all: $(dll)
 
 $(dll): $(src)
 	mkdir -p build/
-	$(compiler) $(src) -out:build/$(dll) $(resources) $(references) -target:library
+	$(compiler) $(src) $(args) -out:build/$(dll) $(resources) $(references) -target:library
 	cp -r references/* build/
 
 clean:
