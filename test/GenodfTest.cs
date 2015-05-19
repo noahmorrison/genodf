@@ -52,8 +52,11 @@ namespace GenodfTest
 
             sheet.GetCells("a2:h2").ForEach(c => c.Bg = "#000000");
 
-            sheet.SetCell("A5", "0.72");
-            sheet.GetCell("A5").ValueType = "percentage";
+            sheet.SetCell("F20", "104.23491");
+            sheet.GetCell("F20").Format = new NumberFormat("000.00");
+
+            sheet.SetCell("F21", "0.64");
+            sheet.GetCell("F21").Format = new NumberFormat("0%");
 
             sheet.Write(filePath);
             Console.WriteLine("Done with test");

@@ -12,6 +12,7 @@ namespace Genodf
         public int SpannedRows;
         public int SpannedColumns;
         public string ValueType;
+        public IFormat Format { get; set; }
 
         #region Properties
         public string Bg { get; set; }
@@ -58,9 +59,10 @@ namespace Genodf
 
         public bool IsStyled()
         {
-            return this.TableCellIsStyled() ||
-                   this.ParagraphIsStyled() ||
-                   this.TextIsStyled();
+            return Format != null
+                || this.TableCellIsStyled()
+                || this.ParagraphIsStyled()
+                || this.TextIsStyled();
         }
 
         public void WriteStyle(XmlWriter xml)
@@ -68,9 +70,15 @@ namespace Genodf
             if (!this.IsStyled())
                 return;
 
+            if (Format != null)
+                Format.WriteFormat(xml);
+
             xml.WriteStartElement("style:style");
             xml.WriteAttributeString("style:family", "table-cell");
             xml.WriteAttributeString("style:name", "CS-" + this.ToA1());
+
+            if (Format != null)
+                xml.WriteAttributeString("style:data-style-name", Format.Name);
 
             this.WriteTableCellProps(xml);
             this.WriteParagraphProps(xml);
@@ -104,6 +112,9 @@ namespace Genodf
                 if (value[0] == '=')
                     type = "function";
 
+                else if (Format != null && Format.Code.EndsWith("%"))
+                    type = "percentage";
+
                 else if (double.TryParse(value, out tmp))
                     type = "float";
 
@@ -113,7 +124,9 @@ namespace Genodf
             else
                 type = ValueType;
 
-            xml.WriteAttributeString("office:value-type", type);
+            if (type != "function")
+                xml.WriteAttributeString("office:value-type", type);
+
             switch (type)
             {
                 case "function":
@@ -126,6 +139,10 @@ namespace Genodf
 
                 case "string":
                     xml.WriteElementString("text:p", value);
+                    break;
+
+                case "percentage":
+                    xml.WriteAttributeString("office:value", value);
                     break;
 
                 default:
