@@ -29,7 +29,11 @@ namespace Genodf
 
         public void WriteFormat(XmlWriter xml)
         {
-            xml.WriteStartElement("number:number-style");
+            if (Code.EndsWith("%"))
+                xml.WriteStartElement("number:percentage-style");
+            else
+                xml.WriteStartElement("number:number-style");
+
             xml.WriteAttributeString("style:name", Name);
 
             if (!string.IsNullOrEmpty(prefix))
