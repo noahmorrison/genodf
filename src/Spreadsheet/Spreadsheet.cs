@@ -9,9 +9,7 @@ namespace Genodf
 {
     public class Spreadsheet : IOpenDocument
     {
-        public string Name = "test";
-        private List<List<Cell>> rows;
-        private List<Column> columns;
+        public List<Sheet> Sheets;
 
         public string Mimetype
         {
@@ -32,7 +30,8 @@ namespace Genodf
 
                 xml.WriteStartElement("office:spreadsheet");
 
-                WriteTable(xml);
+                foreach (var table in Sheets)   
+                    WriteSheet(xml, table);
 
                 xml.WriteEndElement();  // </office:spreadsheet>
 
@@ -50,18 +49,19 @@ namespace Genodf
                 var xml = new XmlTextWriter(writer);
                 xml.Formatting = Formatting.Indented;
 
-                foreach (var column in columns)
-                    column.WriteStyle(xml);
-
-                foreach (var row in rows)
+                foreach (var sheet in Sheets)
                 {
-                    foreach (var cell in row)
-                    {
-                        if (cell == null)
-                            continue;
+                    foreach (var column in sheet.Columns)
+                        column.WriteStyle(xml);
 
-                        cell.WriteStyle(xml);
-                    }
+                    foreach (var row in sheet.Rows)
+                        foreach (var cell in row)
+                        {
+                            if (cell == null)
+                                continue;
+
+                            cell.WriteStyle(xml);
+                        }
                 }
 
                 return style.ToString();
@@ -70,32 +70,14 @@ namespace Genodf
 
         public Spreadsheet()
         {
-            rows = new List<List<Cell>>();
-            columns = new List<Column>();
+            Sheets = new List<Sheet>();
         }
 
-        public void SetCell(string a1, string value)
+        public Sheet NewSheet(string name)
         {
-            int col, row;
-            Spreadsheet.FromA1(a1, out col, out row);
-            while (row >= rows.Count)
-                rows.Add(new List<Cell>());
-
-            while (col >= rows[row].Count)
-                rows[row].Add(null);
-
-            rows[row][col] = new Cell(col, row, value);
-        }
-
-        public void SetCell(int column, int row, string value)
-        {
-            this.SetCell(Spreadsheet.ToA1(column, row), value);
-        }
-
-        public void SetColumn(int column)
-        {
-            for (int y = columns.Count; column >= columns.Count; y++)
-                columns.Add(new Column(y));
+            var sheet = new Sheet(name);
+            Sheets.Add(sheet);
+            return sheet;
         }
 
         public static string ToA1(int column, int row)
@@ -126,14 +108,97 @@ namespace Genodf
             col--;
         }
 
+        private void WriteSheet(XmlWriter xml, Sheet sheet)
+        {
+            xml.WriteStartElement("table:table");
+            xml.WriteAttributeString("table:name", sheet.Name);
+
+            if (!sheet.Columns.Any())
+                xml.WriteElementString("table:table-column", "");
+
+            foreach (var column in sheet.Columns)
+                column.Write(xml);
+
+            if (!sheet.Rows.Any())
+            {
+                xml.WriteStartElement("table:table-row");
+                xml.WriteElementString("table:table-cell", "");
+                xml.WriteEndElement();
+            }
+
+            foreach (var row in sheet.Rows)
+            {
+                xml.WriteStartElement("table:table-row");
+
+                bool hasChild = false;
+                foreach (var cell in row)
+                {
+                    hasChild = true;
+                    if (cell != null)
+                        cell.Write(xml);
+                    else
+                        xml.WriteElementString("table:table-cell", null);
+                }
+
+                if (!hasChild)
+                    xml.WriteElementString("table:table-cell", null);
+
+                xml.WriteEndElement();  // </table:table-row>
+            }
+            xml.WriteEndElement();  // </table:table>
+        }
+    }
+
+    public class Sheet
+    {
+        public string Name = "Sheet";
+
+        public List<List<Cell>> Rows { get; private set; }
+        public List<Column> Columns { get; private set; }
+
+        public Sheet()
+        {
+            Rows = new List<List<Cell>>();
+            Columns = new List<Column>();
+        }
+
+        public Sheet(string name) : this()
+        {
+            Name = name;
+        }
+
+        public void SetCell(string a1, string value)
+        {
+            int col, row;
+            Spreadsheet.FromA1(a1, out col, out row);
+            while (row >= Rows.Count)
+                Rows.Add(new List<Cell>());
+
+            while (col >= Rows[row].Count)
+                Rows[row].Add(null);
+
+            Rows[row][col] = new Cell(col, row, value);
+        }
+
+        public void SetCell(int column, int row, string value)
+        {
+            this.SetCell(Spreadsheet.ToA1(column, row), value);
+        }
+
+        public void SetColumn(int column)
+        {
+            for (int y = Columns.Count; column >= Columns.Count; y++)
+                Columns.Add(new Column(y));
+        }
+
         public Cell GetCell(string a1)
         {
             int col, row;
             Spreadsheet.FromA1(a1, out col, out row);
 
-            if (row < rows.Count)
-                if (col < rows[row].Count)
-                    return rows[row][col] ?? (rows[row][col] = new Cell(col, row));
+            if (row < Rows.Count)
+                if (col < Rows[row].Count)
+                    return Rows[row][col] ?? (Rows[row][col] = new Cell(col, row));
 
             this.SetCell(a1, string.Empty);
             return this.GetCell(a1);
@@ -150,10 +215,10 @@ namespace Genodf
             var bottomRightA1 = a1.Split(':')[1];
 
             int column, row;
-            FromA1(topLeftA1, out column, out row);
+            Spreadsheet.FromA1(topLeftA1, out column, out row);
 
             int tmp1, tmp2;
-            FromA1(bottomRightA1, out tmp1, out tmp2);
+            Spreadsheet.FromA1(bottomRightA1, out tmp1, out tmp2);
 
             int width = tmp1 - column + 1;
             int height = tmp2 - row + 1;
@@ -174,8 +239,8 @@ namespace Genodf
 
         public Column GetColumn(int column)
         {
-            if (column < columns.Count)
-                return columns[column];
+            if (column < Columns.Count)
+                return Columns[column];
 
             this.SetColumn(column);
             return this.GetColumn(column);
@@ -184,38 +249,8 @@ namespace Genodf
         public Column GetColumn(string a1)
         {
             int column, row;
-            FromA1(a1 + "1", out column, out row);
+            Spreadsheet.FromA1(a1 + "1", out column, out row);
             return GetColumn(column);
-        }
-
-        private void WriteTable(XmlWriter xml)
-        {
-            xml.WriteStartElement("table:table");
-            xml.WriteAttributeString("table:name", Name);
-
-            foreach (var column in columns)
-                column.Write(xml);
-
-            foreach (var row in rows)
-            {
-                xml.WriteStartElement("table:table-row");
-
-                bool hasChild = false;
-                foreach (var cell in row)
-                {
-                    hasChild = true;
-                    if (cell != null)
-                        cell.Write(xml);
-                    else
-                        xml.WriteElementString("table:table-cell", null);
-                }
-
-                if (!hasChild)
-                    xml.WriteElementString("table:table-cell", null);
-
-                xml.WriteEndElement();  // </table:table-row>
-            }
-            xml.WriteEndElement();  // </table:table>
         }
     }
 }
