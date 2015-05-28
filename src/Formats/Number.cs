@@ -1,12 +1,15 @@
 using System;
 using System.Xml;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Genodf
 {
     public class NumberFormat : IFormat
     {
         private static int _count = 0;
+        private static Dictionary<string, NumberFormat> _codes = new Dictionary<string, NumberFormat>();
+
         private int id;
 
         private int leadingZeros = 0;
@@ -21,10 +24,28 @@ namespace Genodf
 
         public NumberFormat(string code)
         {
-            _count++;
-            id = _count;
-            Code = code;
-            Valid = ParseFormat(code);
+            if (_codes.ContainsKey(code))
+            {
+                var that = _codes[code];
+                id = that.id;
+                Code = that.Code;
+                Valid = that.Valid;
+                leadingZeros = that.leadingZeros;
+                decimalPlaces = that.decimalPlaces;
+                prefix = that.prefix;
+                suffix = that.suffix;
+            }
+            else
+            {
+                _count++;
+                id = _count;
+
+                Code = code;
+                Valid = ParseFormat(code);
+
+                _codes.Add(code, this);
+            }
+        }
 
         public override string ToString()
         {
