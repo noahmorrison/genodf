@@ -9,6 +9,9 @@ internal static class TableColumnPropertiesExtension
 {
     internal static void WriteTableColumnProps(this ITableColumnProperties props, XmlWriter xml)
     {
+        if (!props.TableColumnIsStyled())
+            return;
+
         xml.WriteStartElement("style:table-column-properties");
 
         if (props.Width != null)

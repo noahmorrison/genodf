@@ -48,6 +48,10 @@ namespace Genodf
                 var xml = new XmlTextWriter(writer);
                 xml.Formatting = Formatting.Indented;
 
+                // Generate empty styles
+                (new Column()).WriteStyle(xml);
+                (new Cell(0, 0)).WriteStyle(xml);
+
                 foreach (var sheet in Sheets)
                 {
                     foreach (var column in sheet.Columns)

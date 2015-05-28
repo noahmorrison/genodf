@@ -9,6 +9,9 @@ internal static class ParagraphPropertiesExtension
 {
     internal static void WriteParagraphProps(this IParagraphProperties props, XmlWriter xml)
     {
+        if (!ParagraphIsStyled(props))
+            return;
+
         xml.WriteStartElement("style:paragraph-properties");
 
         if (props.TextAlign != null)

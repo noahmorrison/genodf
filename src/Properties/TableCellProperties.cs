@@ -14,6 +14,9 @@ internal static class TableCellPropertiesExtension
 {
     internal static void WriteTableCellProps(this ITableCellProperties props, XmlWriter xml)
     {
+        if (!TableCellIsStyled(props))
+            return;
+
         xml.WriteStartElement("style:table-cell-properties");
 
         if (props.Bg != null)

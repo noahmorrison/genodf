@@ -11,6 +11,9 @@ internal static class TextPropertiesExtension
 {
     internal static void WriteTextProps(this ITextProperties props, XmlWriter xml)
     {
+        if (!TextIsStyled(props))
+            return;
+
         xml.WriteStartElement("style:text-properties");
 
         if (props.Fg != null)
