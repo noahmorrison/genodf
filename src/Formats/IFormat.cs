@@ -6,3 +6,8 @@ public interface IFormat
     string Name { get; }
     void WriteFormat(XmlWriter xml);
 }
+
+public interface IFormatable
+{
+    IFormat Format { get; set; }
+}

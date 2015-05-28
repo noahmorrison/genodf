@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
-
 namespace Genodf
 {
     public class Spreadsheet : IOpenDocument
@@ -188,7 +187,7 @@ namespace Genodf
         public void SetColumn(int column)
         {
             for (int y = Columns.Count; column >= Columns.Count; y++)
-                Columns.Add(new Column(y));
+                Columns.Add(new Column());
         }
 
         public Cell GetCell(string a1)

@@ -1,10 +1,9 @@
 ﻿using System.Xml;
+using Genodf.Styles;
 
 namespace Genodf
 {
-    public class Cell : ITableCellProperties,
-                        IParagraphProperties,
-                        ITextProperties
+    public class Cell : CellStyle
     {
         public string value;
         public int Column { get; private set; }
@@ -12,19 +11,6 @@ namespace Genodf
         public int SpannedRows;
         public int SpannedColumns;
         public string ValueType;
-        public IFormat Format { get; set; }
-
-        #region Properties
-        public string Bg { get; set; }
-        public string Fg { get; set; }
-        public bool Bold { get; set; }
-        public string TextAlign { get; set; }
-        public bool Border { get; set; }
-        public bool BorderTop { get; set; }
-        public bool BorderBottom { get; set; }
-        public bool BorderLeft { get; set; }
-        public bool BorderRight { get; set; }
-        #endregion
 
         public Cell(int column, int row)
         {
@@ -57,42 +43,11 @@ namespace Genodf
             return Spreadsheet.ToA1(Column, Row);
         }
 
-        public bool IsStyled()
-        {
-            return Format != null
-                || this.TableCellIsStyled()
-                || this.ParagraphIsStyled()
-                || this.TextIsStyled();
-        }
-
-        public void WriteStyle(XmlWriter xml)
-        {
-            if (!this.IsStyled())
-                return;
-
-            if (Format != null)
-                Format.WriteFormat(xml);
-
-            xml.WriteStartElement("style:style");
-            xml.WriteAttributeString("style:family", "table-cell");
-            xml.WriteAttributeString("style:name", "CS-" + this.ToA1());
-
-            if (Format != null)
-                xml.WriteAttributeString("style:data-style-name", Format.Name);
-
-            this.WriteTableCellProps(xml);
-            this.WriteParagraphProps(xml);
-            this.WriteTextProps(xml);
-
-            xml.WriteEndElement();
-        }
-
         public void Write(XmlWriter xml)
         {
             xml.WriteStartElement("table:table-cell");
 
-            if (this.IsStyled())
-                xml.WriteAttributeString("table:style-name", "CS-" + this.ToA1());
+            xml.WriteAttributeString("table:style-name", StyleId);
 
             if (SpannedRows > 1)
                 xml.WriteAttributeString("table:number-rows-spanned", SpannedRows.ToString());

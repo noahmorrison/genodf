@@ -1,4 +1,4 @@
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -26,6 +26,9 @@
     <Compile Include="src\Properties\TextProperties.cs" />
     <Compile Include="src\Formats\IFormat.cs" />
     <Compile Include="src\Formats\Number.cs" />
+    <Compile Include="src\Styles\Base.cs" />
+    <Compile Include="src\Styles\CellStyle.cs" />
+    <Compile Include="src\Styles\ColumnStyle.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">

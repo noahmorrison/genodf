@@ -25,6 +25,10 @@ namespace Genodf
             id = _count;
             Code = code;
             Valid = ParseFormat(code);
+
+        public override string ToString()
+        {
+            return Code;
         }
 
         public void WriteFormat(XmlWriter xml)
