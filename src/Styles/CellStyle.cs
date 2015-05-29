@@ -36,7 +36,7 @@ namespace Genodf.Styles
             xml.WriteAttributeString("style:name", StyleId);
 
             if (Format != null)
-                xml.WriteAttributeString("style:data-style-name", Format.Name);
+                xml.WriteAttributeString("style:data-style-name", Format.FormatId);
 
             this.WriteTableCellProps(xml);
             this.WriteParagraphProps(xml);

@@ -5,12 +5,19 @@ using System.Collections.Generic;
 
 namespace Genodf
 {
-    public class NumberFormat : IFormat
+    public class NumberFormat : IFormat,
+        ITextProperties
     {
-        private static int _count = 0;
-        private static Dictionary<string, NumberFormat> _codes = new Dictionary<string, NumberFormat>();
+        #region Properties
+        public bool Bold { get; set; }
+        public string Fg { get; set; }
+        public string Bg { get; set; }
+        #endregion
 
-        private int id;
+        private static int _count = 0;
+        private static Dictionary<string, string> _codes = new Dictionary<string, string>();
+
+        private Dictionary<string, NumberFormat> conditions = new Dictionary<string, NumberFormat>();
 
         private int leadingZeros = 0;
         private int decimalPlaces = 0;
@@ -18,48 +25,38 @@ namespace Genodf
         private string suffix;
 
         public string Code { get; private set; }
-        public bool Valid { get; private set; }
 
-        public string Name { get { return "N" +  id; } }
+        public string FormatId { get; private set; }
 
         public NumberFormat(string code)
         {
-            if (_codes.ContainsKey(code))
-            {
-                var that = _codes[code];
-                id = that.id;
-                Code = that.Code;
-                Valid = that.Valid;
-                leadingZeros = that.leadingZeros;
-                decimalPlaces = that.decimalPlaces;
-                prefix = that.prefix;
-                suffix = that.suffix;
-            }
-            else
-            {
-                _count++;
-                id = _count;
-
-                Code = code;
-                Valid = ParseFormat(code);
-
-                _codes.Add(code, this);
-            }
+            Code = code;
         }
 
         public override string ToString()
         {
-            return Code;
+            var str = "[" + Code;
+            foreach (var condition in conditions)
+                str += " (" + condition.Key + condition.Value.ToString() + ")";
+            return str + "]";
         }
 
         public void WriteFormat(XmlWriter xml)
         {
+            if (!SetId())
+                return;
+
+            foreach (var condition in conditions)
+                condition.Value.WriteFormat(xml);
+
             if (Code.EndsWith("%"))
                 xml.WriteStartElement("number:percentage-style");
             else
                 xml.WriteStartElement("number:number-style");
 
-            xml.WriteAttributeString("style:name", Name);
+            xml.WriteAttributeString("style:name", FormatId);
+
+            this.WriteTextProps(xml);
 
             if (!string.IsNullOrEmpty(prefix))
                 xml.WriteElementString("number:text", prefix);
@@ -72,7 +69,46 @@ namespace Genodf
             if (!string.IsNullOrEmpty(suffix))
                 xml.WriteElementString("number:text", suffix);
 
+            foreach (var condition in conditions)
+            {
+                xml.WriteStartElement("style:map");
+                xml.WriteAttributeString("style:condition", condition.Key);
+                xml.WriteAttributeString("style:apply-style-name", condition.Value.FormatId);
+                xml.WriteEndElement();
+            }
+
             xml.WriteEndElement();
+        }
+
+        private bool SetId()
+        {
+            if (!ParseFormat(Code))
+                return false;
+
+            var key = this.ToString();
+
+            if (_codes.ContainsKey(key))
+            {
+                FormatId = _codes[key];
+                return false;
+            }
+            else
+            {
+                var styleType = this.GetType().Name;
+
+                FormatId = "NumFormat-" + _count;
+                _codes[key] = FormatId;
+
+                _count++;
+                return true;
+            }
+        }
+
+        public NumberFormat AddCondition(string code, string condition)
+        {
+            var numFormat = new NumberFormat(code);
+            conditions.Add(condition, numFormat);
+            return numFormat;
         }
 
         private bool ParseFormat(string code)

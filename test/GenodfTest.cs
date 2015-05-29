@@ -60,6 +60,12 @@ namespace GenodfTest
             sheet.GetCell("F21").Format = new NumberFormat("0%");
 
             var multisheet = ods.NewSheet("MultiSheet");
+
+            multisheet.SetCell("A1", "Change me");
+            var format = new NumberFormat("0");
+            format.AddCondition("-0", "value()<0").Fg = "#ff0000";
+            multisheet.GetCell("A1").Format = format;
+
             ods.Write(filePath);
             Console.WriteLine("Done with test");
         }
