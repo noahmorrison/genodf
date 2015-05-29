@@ -31,7 +31,7 @@ namespace Genodf.Styles
             }
             else
             {
-                var styleType = GetStyleType();
+                var styleType = this.GetType().Name;
 
                 if (!_counts.ContainsKey(styleType))
                     _counts[styleType] = 0;
@@ -42,11 +42,6 @@ namespace Genodf.Styles
                 _counts[styleType]++;
                 return true;
             }
-        }
-
-        private string GetStyleType()
-        {
-            return this.GetType().Name;
         }
 
         private string Serialize()
@@ -63,7 +58,7 @@ namespace Genodf.Styles
                     break;
 
                 default:
-                    throw new NotImplementedException(this.GetType().ToString());
+                    throw new NotImplementedException(this.GetType().Name);
             }
 
             var id = type.Name + " ";
