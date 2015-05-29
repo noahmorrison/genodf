@@ -56,6 +56,9 @@
     <EmbeddedResource Include="resources\manifest.xml">
       <LogicalName>manifest.xml</LogicalName>
     </EmbeddedResource>
+	<EmbeddedResource Include="resources\styles.xml">
+      <LogicalName>styles.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

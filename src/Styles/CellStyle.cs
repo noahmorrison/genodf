@@ -7,6 +7,7 @@ using System.Xml;
 namespace Genodf.Styles
 {
     public class CellStyle : Base,
+        IStyleable,
         IFormatable,
         ITableCellProperties,
         IParagraphProperties,
@@ -42,6 +43,7 @@ namespace Genodf.Styles
             this.WriteParagraphProps(xml);
             this.WriteTextProps(xml);
 
+            WriteConditions(xml);
             xml.WriteEndElement();
         }
     }

@@ -1,14 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
 
+using Genodf.Styles;
+
 namespace Genodf
 {
     public class Spreadsheet : IOpenDocument
     {
-        public List<Sheet> Sheets;
+        public List<Sheet> Sheets { get; private set; }
+        public List<IStyleable> Styles { get; private set; }
 
         public string Mimetype
         {
@@ -35,6 +39,29 @@ namespace Genodf
                 xml.WriteEndElement();  // </office:spreadsheet>
 
                 return contents.ToString();
+            }
+        }
+
+        public string GlobalStyle
+        {
+            get
+            {
+                var builder = new StringBuilder();
+                var writer = new StringWriter(builder);
+
+                var xml = new XmlTextWriter(writer);
+                xml.Formatting = Formatting.Indented;
+
+                xml.WriteStartElement("office:styles");
+
+                foreach (var style in Styles)
+                {
+                    style.WriteStyle(xml);
+                }
+
+                xml.WriteEndElement();
+
+                return builder.ToString();
             }
         }
 
@@ -74,6 +101,7 @@ namespace Genodf
         public Spreadsheet()
         {
             Sheets = new List<Sheet>();
+            Styles = new List<IStyleable>();
         }
 
         public Sheet NewSheet(string name)
@@ -81,6 +109,19 @@ namespace Genodf
             var sheet = new Sheet(name);
             Sheets.Add(sheet);
             return sheet;
+        }
+
+        public void AddGlobalStyle(IStyleable style)
+        {
+            if (string.IsNullOrEmpty(style.Name))
+                throw new ArgumentNullException("style.Name");
+            Styles.Add(style);
+        }
+
+        public void AddGlobalStyle(string name, IStyleable style)
+        {
+            style.Name = name;
+            AddGlobalStyle(style);
         }
 
         public static string ToA1(int column, int row)

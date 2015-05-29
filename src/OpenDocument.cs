@@ -10,6 +10,7 @@ namespace Genodf
         string Mimetype { get; }
         string Body { get; }
         string Style { get; }
+        string GlobalStyle { get; }
     }
 
 
@@ -17,6 +18,7 @@ namespace Genodf
     {
         public static void Write(this IOpenDocument doc, string filePath)
         {
+            var style = Resources.Get("styles.xml", doc.GlobalStyle);
             var content = Resources.Get("content.xml", doc.Style, doc.Body);
             var manifest = Resources.Get("manifest.xml", doc.Mimetype);
 
@@ -27,6 +29,7 @@ namespace Genodf
 
                 Add(zip, "mimetype", doc.Mimetype);
                 Add(zip, "content.xml", content);
+                Add(zip, "styles.xml", style);
                 Add(zip, "META-INF/manifest.xml", manifest);
 
                 zip.Finish();

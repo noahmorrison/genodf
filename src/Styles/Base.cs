@@ -9,6 +9,7 @@ namespace Genodf.Styles
 {
     public interface IStyleable
     {
+        string Name { get; set; }
         string StyleId { get; }
         void WriteStyle(XmlWriter xml);
     }
@@ -18,10 +19,19 @@ namespace Genodf.Styles
         private static Dictionary<string, string> _styles = new Dictionary<string, string>();
         private static Dictionary<string, int> _counts = new Dictionary<string, int>();
 
+        private Dictionary<string, string> conditions = new Dictionary<string, string>();
+
+        public string Name { get; set; }
         public string StyleId { get; private set; }
 
         public bool SetId()
         {
+            if (!string.IsNullOrEmpty(Name))
+            {
+                StyleId = Name;
+                return true;
+            }
+
             var key = Serialize();
 
             if (_styles.ContainsKey(key))
@@ -71,7 +81,26 @@ namespace Genodf.Styles
                 id += propInfo.Name + "=" + propInfo.GetValue(this, null) + ", ";
             }
 
+            foreach (var condition in conditions)
+                id += " [" + condition.Key + ": " + condition.Value + "]";
+
             return id;
+        }
+
+        public void WriteConditions(XmlWriter xml)
+        {
+            foreach (var condition in conditions)
+            {
+                xml.WriteStartElement("style:map");
+                xml.WriteAttributeString("style:condition", condition.Key);
+                xml.WriteAttributeString("style:apply-style-name", condition.Value);
+                xml.WriteEndElement();
+            }
+        }
+
+        public void AddConditional(string condition, string globalStyleName)
+        {
+            conditions.Add(condition, globalStyleName);
         }
     }
 }

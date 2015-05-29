@@ -23,6 +23,7 @@ namespace Genodf.Styles
 
             this.WriteTableColumnProps(xml);
 
+            WriteConditions(xml);
             xml.WriteEndElement();
         }
     }

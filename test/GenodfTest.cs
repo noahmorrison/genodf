@@ -61,10 +61,17 @@ namespace GenodfTest
 
             var multisheet = ods.NewSheet("MultiSheet");
 
-            multisheet.SetCell("A1", "Change me");
+            multisheet.SetCell("A1", "-42");
             var format = new NumberFormat("0");
             format.AddCondition("-0", "value()<0").Fg = "#ff0000";
             multisheet.GetCell("A1").Format = format;
+
+
+            var redStyle = new Genodf.Styles.CellStyle();
+            redStyle.Fg = "#ff0000";
+            ods.AddGlobalStyle("RedStyle", redStyle);
+            multisheet.SetCell("B1", "Fail");
+            multisheet.GetCell("B1").AddConditional("cell-content()=\"Fail\"", "RedStyle");
 
             ods.Write(filePath);
             Console.WriteLine("Done with test");
