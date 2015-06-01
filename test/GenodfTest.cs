@@ -23,7 +23,7 @@ namespace GenodfTest
 
             sheet.GetCell("C4").Bg = "#ff0000";
             sheet.GetCell("C4").Fg = "#0000ff";
-            sheet.GetCell("C4").TextAlign = "center";
+            sheet.GetCell("C4").TextAlign = TextAlign.Center;
             sheet.GetCell("C4").Bold = true;
 
             sheet.SetCell("B6", "I'm really big!");
@@ -43,6 +43,7 @@ namespace GenodfTest
 
             var notSet = sheet.GetCell("E1");
             notSet.value = "hey!";
+            notSet.TextAlign = TextAlign.Center;
 
             var neverSet = sheet.GetCell("F1");
             neverSet.Bg = "#aa55aa";
