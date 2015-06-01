@@ -211,7 +211,7 @@ namespace Genodf
             Name = name;
         }
 
-        public void SetCell(string a1, string value)
+        public Cell SetCell(string a1, string value)
         {
             int col, row;
             Spreadsheet.FromA1(a1, out col, out row);
@@ -222,11 +222,12 @@ namespace Genodf
                 Rows[row].Add(null);
 
             Rows[row][col] = new Cell(col, row, value);
+            return Rows[row][col];
         }
 
-        public void SetCell(int column, int row, string value)
+        public Cell SetCell(int column, int row, string value)
         {
-            this.SetCell(Spreadsheet.ToA1(column, row), value);
+            return this.SetCell(Spreadsheet.ToA1(column, row), value);
         }
 
         public void SetColumn(int column)
