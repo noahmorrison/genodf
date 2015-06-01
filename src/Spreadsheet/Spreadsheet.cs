@@ -54,6 +54,13 @@ namespace Genodf
 
                 xml.WriteStartElement("office:styles");
 
+                xml.WriteStartElement("style:default-style");
+                xml.WriteAttributeString("style:family", "table-cell");
+                xml.WriteStartElement("style:text-properties");
+                xml.WriteAttributeString("style:font-name", "Arial");
+                xml.WriteEndElement();
+                xml.WriteEndElement();
+
                 foreach (var style in Styles)
                 {
                     style.WriteStyle(xml);
