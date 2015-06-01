@@ -316,12 +316,16 @@ namespace Genodf
             {
                 GetCell(x, row).BorderTop = true;
                 GetCell(x, row + height - 1).BorderBottom = true;
+                if (GetCell(x, row).SpannedRows == height)
+                    GetCell(x, row).BorderBottom = true;
             }
 
             for (var y = row; y < row + height; y++)
             {
                 GetCell(column, y).BorderLeft = true;
                 GetCell(column + width - 1, y).BorderRight = true;
+                if (GetCell(column, y).SpannedColumns == width)
+                    GetCell(column, y).BorderRight = true;
             }
         }
     }
