@@ -18,6 +18,9 @@ namespace Genodf
     {
         public static void Write(this IOpenDocument doc, string filePath)
         {
+            Genodf.Styles.Base.Reset();
+            Genodf.NumberFormat.Reset();
+
             var style = Resources.Get("styles.xml", doc.GlobalStyle);
             var content = Resources.Get("content.xml", doc.Style, doc.Body);
             var manifest = Resources.Get("manifest.xml", doc.Mimetype);

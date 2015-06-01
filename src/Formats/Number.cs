@@ -33,6 +33,12 @@ namespace Genodf
             Code = code;
         }
 
+        internal static void Reset()
+        {
+            _count = 0;
+            _codes = new Dictionary<string, string>();
+        }
+
         public override string ToString()
         {
             var str = "[" + Code;
@@ -114,6 +120,9 @@ namespace Genodf
         private bool ParseFormat(string code)
         {
             System.Console.WriteLine("Code: " + code);
+
+            leadingZeros = 0;
+            decimalPlaces = 0;
 
             var leadingCode = string.Empty;
             var decimalCode = string.Empty;

@@ -54,6 +54,12 @@ namespace Genodf.Styles
             }
         }
 
+        internal static void Reset()
+        {
+            _styles = new Dictionary<string, string>();
+            _counts = new Dictionary<string, int>();
+        }
+
         private string Serialize()
         {
             Type type;
