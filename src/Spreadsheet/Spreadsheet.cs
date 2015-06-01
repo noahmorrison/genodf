@@ -152,6 +152,20 @@ namespace Genodf
             col--;
         }
 
+        public static void FromA1Box(string a1, out int column, out int row, out int width, out int height)
+        {
+            var topLeftA1 = a1.Split(':')[0];
+            var bottomRightA1 = a1.Split(':')[1];
+
+            Spreadsheet.FromA1(topLeftA1, out column, out row);
+
+            int tmp1, tmp2;
+            Spreadsheet.FromA1(bottomRightA1, out tmp1, out tmp2);
+
+            width = tmp1 - column + 1;
+            height = tmp2 - row + 1;
+        }
+
         private void WriteSheet(XmlWriter xml, Sheet sheet)
         {
             xml.WriteStartElement("table:table");
@@ -256,17 +270,8 @@ namespace Genodf
 
         public List<Cell> GetCells(string a1)
         {
-            var topLeftA1 = a1.Split(':')[0];
-            var bottomRightA1 = a1.Split(':')[1];
-
-            int column, row;
-            Spreadsheet.FromA1(topLeftA1, out column, out row);
-
-            int tmp1, tmp2;
-            Spreadsheet.FromA1(bottomRightA1, out tmp1, out tmp2);
-
-            int width = tmp1 - column + 1;
-            int height = tmp2 - row + 1;
+            int column, row, width, height;
+            Spreadsheet.FromA1Box(a1, out column, out row, out width, out height);
 
             return GetCells(column, row, width, height);
         }
@@ -296,6 +301,28 @@ namespace Genodf
             int column, row;
             Spreadsheet.FromA1(a1 + "1", out column, out row);
             return GetColumn(column);
+        }
+
+        public void BorderAround(string a1)
+        {
+            int column, row, width, height;
+            Spreadsheet.FromA1Box(a1, out column, out row, out width, out height);
+            BorderAround(column, row, width, height);
+        }
+
+        public void BorderAround(int column, int row, int width, int height)
+        {
+            for (var x = column; x < column + width; x++)
+            {
+                GetCell(x, row).BorderTop = true;
+                GetCell(x, row + height - 1).BorderBottom = true;
+            }
+
+            for (var y = row; y < row + height; y++)
+            {
+                GetCell(column, y).BorderLeft = true;
+                GetCell(column + width - 1, y).BorderRight = true;
+            }
         }
     }
 }

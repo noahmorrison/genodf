@@ -74,6 +74,8 @@ namespace GenodfTest
             multisheet.SetCell("B1", "Fail");
             multisheet.GetCell("B1").AddConditional("cell-content()=\"Fail\"", "RedStyle");
 
+            multisheet.BorderAround("C5:D10");
+
             ods.Write(filePath);
             Console.WriteLine("Done with test");
         }
