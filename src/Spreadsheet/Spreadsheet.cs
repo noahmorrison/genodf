@@ -234,21 +234,25 @@ namespace Genodf
 
         public Cell SetCell(string a1, string value)
         {
-            int col, row;
-            Spreadsheet.FromA1(a1, out col, out row);
-            while (row >= Rows.Count)
-                Rows.Add(new List<Cell>());
-
-            while (col >= Rows[row].Count)
-                Rows[row].Add(null);
-
-            Rows[row][col] = new Cell(col, row, value);
-            return Rows[row][col];
+            int column, row;
+            Spreadsheet.FromA1(a1, out column, out row);
+            return SetCell(column, row, value);
         }
 
         public Cell SetCell(int column, int row, string value)
         {
-            return this.SetCell(Spreadsheet.ToA1(column, row), value);
+            while (row >= Rows.Count)
+                Rows.Add(new List<Cell>());
+
+            while (column >= Rows[row].Count)
+                Rows[row].Add(null);
+
+            if (Rows[row][column] != null)
+                Rows[row][column].Value = value;
+            else
+                Rows[row][column] = new Cell(column, row, value);
+
+            return Rows[row][column];
         }
 
         public void SetColumn(int column)

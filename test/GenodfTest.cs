@@ -42,7 +42,7 @@ namespace GenodfTest
             sheet.GetCell("J9").BorderRight = true;
 
             var notSet = sheet.GetCell("E1");
-            notSet.value = "hey!";
+            notSet.Value = "hey!";
             notSet.TextAlign = TextAlign.Center;
 
             var neverSet = sheet.GetCell("F1");
