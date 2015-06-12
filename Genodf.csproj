@@ -16,6 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="src\OpenDocument.cs" />
+    <Compile Include="src\Properties\TableProperties.cs" />
     <Compile Include="src\Resources.cs" />
     <Compile Include="src\Spreadsheet\Cell.cs" />
     <Compile Include="src\Spreadsheet\Column.cs" />
@@ -29,6 +30,8 @@
     <Compile Include="src\Styles\Base.cs" />
     <Compile Include="src\Styles\CellStyle.cs" />
     <Compile Include="src\Styles\ColumnStyle.cs" />
+    <Compile Include="src\Styles\MasterPageStyle.cs" />
+    <Compile Include="src\Styles\TableStyle.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
@@ -56,7 +59,7 @@
     <EmbeddedResource Include="resources\manifest.xml">
       <LogicalName>manifest.xml</LogicalName>
     </EmbeddedResource>
-	<EmbeddedResource Include="resources\styles.xml">
+    <EmbeddedResource Include="resources\styles.xml">
       <LogicalName>styles.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>

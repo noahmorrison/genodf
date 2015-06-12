@@ -13,6 +13,7 @@ namespace Genodf
     {
         public List<Sheet> Sheets { get; private set; }
         public List<IStyleable> Styles { get; private set; }
+        public MasterPageStyle MasterPageStyle { get; private set; }
 
         public string Mimetype
         {
@@ -62,10 +63,12 @@ namespace Genodf
                 xml.WriteEndElement();
 
                 foreach (var style in Styles)
-                {
                     style.WriteStyle(xml);
-                }
 
+                xml.WriteEndElement();
+
+                xml.WriteStartElement("office:master-styles");
+                MasterPageStyle.WriteStyle(xml);
                 xml.WriteEndElement();
 
                 return builder.ToString();
@@ -88,6 +91,8 @@ namespace Genodf
 
                 foreach (var sheet in Sheets)
                 {
+                    sheet.WriteStyle(xml);
+                    
                     foreach (var column in sheet.Columns)
                         column.WriteStyle(xml);
 
@@ -109,25 +114,27 @@ namespace Genodf
         {
             Sheets = new List<Sheet>();
             Styles = new List<IStyleable>();
+            MasterPageStyle = new MasterPageStyle("Default");
         }
 
         public Sheet NewSheet(string name)
         {
             var sheet = new Sheet(name);
             Sheets.Add(sheet);
+
             return sheet;
         }
 
         public void AddGlobalStyle(IStyleable style)
         {
-            if (string.IsNullOrEmpty(style.Name))
+            if (string.IsNullOrEmpty(style.StyleName))
                 throw new ArgumentNullException("style.Name");
             Styles.Add(style);
         }
 
         public void AddGlobalStyle(string name, IStyleable style)
         {
-            style.Name = name;
+            style.StyleName = name;
             AddGlobalStyle(style);
         }
 
@@ -177,6 +184,7 @@ namespace Genodf
         {
             xml.WriteStartElement("table:table");
             xml.WriteAttributeString("table:name", sheet.Name);
+            xml.WriteAttributeString("table:style-name", sheet.StyleId);
 
             if (!sheet.Columns.Any())
                 xml.WriteElementString("table:table-column", "");
@@ -214,14 +222,14 @@ namespace Genodf
         }
     }
 
-    public class Sheet
+    public class Sheet : TableStyle
     {
         public string Name = "Sheet";
 
         public List<List<Cell>> Rows { get; private set; }
         public List<Column> Columns { get; private set; }
 
-        public Sheet()
+        public Sheet() : base()
         {
             Rows = new List<List<Cell>>();
             Columns = new List<Column>();

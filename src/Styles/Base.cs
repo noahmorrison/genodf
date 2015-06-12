@@ -9,7 +9,7 @@ namespace Genodf.Styles
 {
     public interface IStyleable
     {
-        string Name { get; set; }
+        string StyleName { get; set; }
         string StyleId { get; }
         void WriteStyle(XmlWriter xml);
     }
@@ -21,14 +21,14 @@ namespace Genodf.Styles
 
         private Dictionary<string, string> conditions = new Dictionary<string, string>();
 
-        public string Name { get; set; }
+        public string StyleName { get; set; }
         public string StyleId { get; private set; }
 
         public bool SetId()
         {
-            if (!string.IsNullOrEmpty(Name))
+            if (!string.IsNullOrEmpty(StyleName))
             {
-                StyleId = Name;
+                StyleId = StyleName;
                 return true;
             }
 
@@ -71,6 +71,10 @@ namespace Genodf.Styles
 
                 case "Column":
                     type = (new ColumnStyle()).GetType();
+                    break;
+
+                case "Sheet":
+                    type = (new TableStyle()).GetType();
                     break;
 
                 default:
