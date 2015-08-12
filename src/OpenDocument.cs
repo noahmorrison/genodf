@@ -1,4 +1,7 @@
+using System;
 using System.IO;
+using System.Text;
+using System.Xml;
 
 using ICSharpCode.SharpZipLib.Zip;
 
@@ -11,8 +14,34 @@ namespace Genodf
         string Body { get; }
         string Style { get; }
         string GlobalStyle { get; }
+
+        void Load(DocumentFiles files);
     }
 
+    public static class OpenDocument
+    {
+        public static DocType Read<DocType>(string filePath) where DocType : IOpenDocument, new()
+        {
+            using (var fstream = File.OpenRead(filePath))
+            using (var zip = new ZipFile(fstream))
+            {
+                string mimetype;
+
+                using (var stream = zip.GetInputStream(zip.GetEntry("mimetype")))
+                using (var reader = new StreamReader(stream))
+                    mimetype = reader.ReadToEnd();
+
+                var content = zip.GetInputStream(zip.GetEntry("content.xml"));
+                var style = zip.GetInputStream(zip.GetEntry("styles.xml"));
+
+                var files = new DocumentFiles(mimetype, content, style);
+
+                var odf = new DocType();
+                odf.Load(files);
+                return odf;
+            }
+        }
+    }
 
     public static class OpenDocumentExtension
     {
@@ -54,6 +83,31 @@ namespace Genodf
 
             writer.Flush();
             zip.CloseEntry();
+        }
+    }
+
+    public class DocumentFiles
+    {
+        public string Mimetype { get; private set; }
+        public XmlDocument Content { get; private set; }
+        public XmlDocument Style { get; private set; }
+
+        public DocumentFiles(string mimetype, Stream content, Stream style)
+        {
+            Mimetype = mimetype;
+            Content = new XmlDocument();
+            Content.Load(content);
+            Style = new XmlDocument();
+            Style.Load(style);
+        }
+    }
+
+    internal static class CustomExtensionMethods
+    {
+        public static void IfHas(this XmlAttributeCollection self, string key, Action<string> action)
+        {
+            if (self[key] != null)
+                action(self[key].Value);
         }
     }
 }

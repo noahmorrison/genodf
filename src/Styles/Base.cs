@@ -110,6 +110,12 @@ namespace Genodf.Styles
 
         public void AddConditional(string condition, string globalStyleName)
         {
+            if (conditions.ContainsKey(condition))
+                if(conditions[condition] != globalStyleName)
+                    throw new ArgumentException("Condition has already been added with another style");
+                else
+                    return;
+
             conditions.Add(condition, globalStyleName);
         }
     }

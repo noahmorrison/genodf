@@ -24,6 +24,38 @@ namespace Genodf.Styles
         public bool BorderLeft { get; set; }
         public bool BorderRight { get; set; }
 
+        public CellStyle()
+        { }
+
+        public CellStyle(XmlNode node)
+        {
+            if (node.Attributes["style:name"] != null)
+                StyleName = node.Attributes["style:name"].Value;
+
+            foreach (XmlNode props in node.ChildNodes)
+                switch (props.Name)
+                {
+                    case "style:paragraph-properties":
+                        this.ReadParagraphProps(props);
+                        break;
+                    case "style:table-cell-properties":
+                        this.ReadTableCellProps(props);
+                        break;
+                    case "style:text-properties":
+                        this.ReadTextProps(props);
+                        break;
+                    case "style:map":
+                        var cond = props.Attributes["style:condition"].Value;
+                        var style = props.Attributes["style:apply-style-name"].Value;
+
+                        this.AddConditional(cond, style);
+                        break;
+
+                    default:
+                        throw new ArgumentException("Invalid properties type");
+                }
+        }
+
         public void WriteStyle(XmlWriter xml)
         {
             if (!SetId())

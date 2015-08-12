@@ -3,6 +3,8 @@ using System.Xml;
 using System.Linq;
 using System.Collections.Generic;
 
+using Genodf.Styles;
+
 namespace Genodf
 {
     public class NumberFormat : IFormat,
@@ -31,6 +33,45 @@ namespace Genodf
         public NumberFormat(string code)
         {
             Code = code;
+        }
+
+        public NumberFormat(XmlNode node, Func<string, XmlNode> search)
+        {
+            var intRead = false;
+            foreach (XmlNode child in node.ChildNodes)
+            {
+                if (child.Name == "style:text-properties")
+                    this.ReadTextProps(child);
+
+                if (child.Name == "number:text")
+                    if (intRead)
+                        suffix = child.InnerText;
+                    else
+                        prefix = child.InnerText;
+
+                if (child.Name == "number:number")
+                {
+                    intRead = true;
+                    if (child.Attributes["number:decimal-places"] != null)
+                        decimalPlaces = int.Parse(child.Attributes["number:decimal-places"].Value);
+                    if (child.Attributes["number:min-integer-digits"] != null)
+                        leadingZeros = int.Parse(child.Attributes["number:min-integer-digits"].Value);
+                }
+
+                if (child.Name == "style:map")
+                {
+                    var cond = child.Attributes["style:condition"].Value;
+                    var style = child.Attributes["style:apply-style-name"].Value;
+                    var term = "number:number-style[@style:name = \"" + style + "\"]";
+                    var styleNode = search(term);
+                    conditions.Add(cond, new NumberFormat(styleNode, search));
+                }
+            }
+
+            Code = prefix + new string('0', leadingZeros);
+            if (decimalPlaces > 0)
+                Code += "." + new string('0', decimalPlaces);
+            Code += suffix;
         }
 
         internal static void Reset()

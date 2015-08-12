@@ -117,6 +117,145 @@ namespace Genodf
             MasterPageStyle = new MasterPageStyle("Default");
         }
 
+        public void Load(DocumentFiles ods)
+        {
+            if (ods.Mimetype != Mimetype)
+                throw new InvalidDataException("Mimetype does not match");
+
+            #region Content
+            var ns = new XmlNamespaceManager(new NameTable());
+            foreach (XmlAttribute attr in ods.Content.ChildNodes[1].Attributes)
+                if (attr.Name.StartsWith("xmlns:"))
+                    ns.AddNamespace(attr.Name.Replace("xmlns:", string.Empty), attr.Value);
+
+            var styleRoot = ods.Content.DocumentElement.SelectSingleNode("//office:automatic-styles", ns);
+            var root = ods.Content.DocumentElement.SelectSingleNode("//office:spreadsheet", ns);
+            foreach (XmlNode table in root.SelectNodes("table:table", ns))
+            {
+                var sheet = NewSheet(table.Attributes["table:name"].Value);
+                #region Columns
+                foreach (XmlNode node in table.SelectNodes("table:table-column", ns))
+                {
+                    var col = new Column();
+                    node.Attributes.IfHas("table:style-name", styleName =>
+                    {
+                        var xpath = string.Format("style:style[@style:name = \"{0}\"]", styleName);
+                        var styleNode = styleRoot.SelectSingleNode(xpath, ns);
+                        foreach (XmlNode props in styleNode.ChildNodes) switch (props.Name)
+                        {
+                            case "style:table-column-properties":
+                                col.ReadTableColumnProps(props);
+                                break;
+
+                            default:
+                                throw new InvalidDataException("Invalid properties type");
+                        }
+                    });
+
+                    sheet.Columns.Add(col);
+                }
+                #endregion
+                #region Rows
+                var y = 0;
+                foreach (XmlNode rowNode in table.SelectNodes("table:table-row", ns))
+                {
+                    var x = 0;
+                    var row = new List<Cell>();
+                    foreach (XmlNode node in rowNode.SelectNodes("table:table-cell", ns))
+                    {
+                        var cell = new Cell(x, y);
+
+                        var valueType = node.Attributes["office:value-type"];
+                        switch (valueType != null ? valueType.Value : null)
+                        {
+                            case "string":
+                                if (node.ChildNodes.Count > 0)
+                                    cell.Value = node.ChildNodes[0].InnerText;
+                                break;
+
+                            case "float":
+                            case "percentage":
+                                node.Attributes.IfHas("office:value", v => cell.Value = v);
+                                break;
+
+                            default:
+                                node.Attributes.IfHas("table:formula", value =>
+                                    cell.Value = value.Substring(3));
+                                break;
+                        }
+                        cell.ValueType = valueType != null ? valueType.Value : null;
+
+                        node.Attributes.IfHas("table:style-name", styleName =>
+                        {
+                            #region Cell style
+                            var xpath = string.Format("style:style[@style:name = \"{0}\"]", styleName);
+                            var styleNode = styleRoot.SelectSingleNode(xpath, ns);
+                            foreach (XmlNode props in styleNode.ChildNodes) switch (props.Name)
+                            {
+                                case "style:paragraph-properties":
+                                    cell.ReadParagraphProps(props);
+                                    break;
+                                case "style:table-cell-properties":
+                                    cell.ReadTableCellProps(props);
+                                    break;
+                                case "style:text-properties":
+                                    cell.ReadTextProps(props);
+                                    break;
+                                case "style:map":
+                                    var cond = props.Attributes["style:condition"].Value;
+                                    var style = props.Attributes["style:apply-style-name"].Value;
+
+                                    cell.AddConditional(cond, style);
+                                    break;
+
+                                default:
+                                    throw new InvalidDataException("Invalid properties type");
+                            }
+
+                            node.Attributes.IfHas("table:number-rows-spanned", value =>
+                                cell.SpannedRows = int.Parse(value));
+
+                            node.Attributes.IfHas("table:number-columns-spanned", value =>
+                                cell.SpannedColumns = int.Parse(value));
+
+                            #region Cell format
+                            if (styleNode.Attributes["style:data-style-name"] != null)
+                            {
+                                var format = styleNode.Attributes["style:data-style-name"].Value;
+                                var autoStyles = ods.Content.DocumentElement.SelectSingleNode("//office:automatic-styles", ns);
+                                var globalStyles = ods.Style.DocumentElement.SelectSingleNode("//office:styles", ns);
+
+                                var xp = string.Format("number:number-style[@style:name = \"{0}\"] | " +
+                                                       "number:percentage-style[@style:name = \"{0}\"]",
+                                                       format);
+
+                                var formatNode = autoStyles.SelectSingleNode(xp, ns);
+                                if (formatNode == null)
+                                    formatNode = globalStyles.SelectSingleNode(xp, ns);
+                                cell.Format = new NumberFormat(formatNode, search => { return autoStyles.SelectSingleNode(search, ns); });
+                            }
+                            #endregion
+                            #endregion
+                        });
+
+                        row.Add(cell);
+                        x++;
+                    }
+
+                    sheet.Rows.Add(row);
+                    y++;
+                }
+                #endregion
+            }
+            #endregion
+
+            #region Global Styles
+            var globalStyle = ods.Style.DocumentElement.SelectSingleNode("//office:styles", ns);
+            foreach (XmlNode node in globalStyle.SelectNodes("style:style", ns))
+                AddGlobalStyle(new CellStyle(node));
+            #endregion
+        }
+
         public Sheet NewSheet(string name)
         {
             var sheet = new Sheet(name);
@@ -271,20 +410,34 @@ namespace Genodf
 
         public Cell GetCell(string a1)
         {
-            int col, row;
-            Spreadsheet.FromA1(a1, out col, out row);
+            int column, row;
+            Spreadsheet.FromA1(a1, out column, out row);
 
-            if (row < Rows.Count)
-                if (col < Rows[row].Count)
-                    return Rows[row][col] ?? (Rows[row][col] = new Cell(col, row));
-
-            this.SetCell(a1, string.Empty);
-            return this.GetCell(a1);
+            return GetCell(column, row);
         }
 
         public Cell GetCell(int column, int row)
         {
-            return this.GetCell(Spreadsheet.ToA1(column, row));
+            if (row < Rows.Count)
+                if (column < Rows[row].Count)
+                    return Rows[row][column] ?? (Rows[row][column] = new Cell(column, row));
+
+            SetCell(column, row, string.Empty);
+            return GetCell(column, row);
+        }
+
+        public Cell GetCell(string a1, Action<Cell> action)
+        {
+            var cell = GetCell(a1);
+            action(cell);
+            return cell;
+        }
+
+        public Cell GetCell(int column, int row, Action<Cell> action)
+        {
+            var cell = GetCell(column, row);
+            action(cell);
+            return cell;
         }
 
         public List<Cell> GetCells(string a1)

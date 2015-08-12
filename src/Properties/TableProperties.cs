@@ -1,31 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
 
-public interface ITableProperties
+namespace Genodf
 {
-    bool? Display { get; set; }
-}
-
-internal static class TablePropertiesExtension
-{
-    internal static void WriteTableProps(this ITableProperties props, XmlWriter xml)
+    public interface ITableProperties
     {
-        if (!TableIsStyled(props))
-            return;
-
-        xml.WriteStartElement("style:table-properties");
-
-        if (props.Display.HasValue)
-            xml.WriteAttributeString("table:display", props.Display.ToString());
-
-        xml.WriteEndElement();
+        bool? Display { get; set; }
     }
 
-    internal static bool TableIsStyled(this ITableProperties props)
+    internal static class TablePropertiesExtension
     {
-        return props.Display.HasValue;
+        internal static void WriteTableProps(this ITableProperties props, XmlWriter xml)
+        {
+            if (!TableIsStyled(props))
+                return;
+
+            xml.WriteStartElement("style:table-properties");
+
+            if (props.Display.HasValue)
+                xml.WriteAttributeString("table:display", props.Display.ToString());
+
+            xml.WriteEndElement();
+        }
+
+        internal static void ReadTableProps(this ITableProperties self, XmlNode node)
+        {
+            if (node.Name != "style:table-properties")
+                throw new ArgumentException("Xml node is not a table property node", "node");
+
+            node.Attributes.IfHas("table:display", value => self.Display = bool.Parse(value));
+        }
+
+        internal static bool TableIsStyled(this ITableProperties props)
+        {
+            return props.Display.HasValue;
+        }
     }
 }

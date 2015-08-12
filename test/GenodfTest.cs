@@ -8,12 +8,24 @@ namespace GenodfTest
 {
     public class GenodfTest
     {
+        static string filePath;
+
         public static void Main()
         {
             var path = Assembly.GetExecutingAssembly().Location;
             var dir = Path.GetDirectoryName(path);
-            var filePath = Path.Combine(dir, "genodf.ods");
+            filePath = Path.Combine(dir, "genodf.ods");
 
+            TestWriting();
+            TestReloading();
+            TestReloadingShouldChangeNothing();
+
+            Console.WriteLine("Done with test");
+            System.Diagnostics.Process.Start(filePath);
+        }
+
+        private static void TestWriting()
+        {
             var ods = new Spreadsheet();
             var sheet = ods.NewSheet("Genodf Test");
 
@@ -74,11 +86,53 @@ namespace GenodfTest
             multisheet.SetCell("B1", "Fail");
             multisheet.GetCell("B1").AddConditional("cell-content()=\"Fail\"", "RedStyle");
 
-            multisheet.GetCell("C5").SpannedColumns = 4;
+            ods.Write(filePath);
+        }
+
+        private static void TestReloading()
+        {
+            var ods = OpenDocument.Read<Spreadsheet>(filePath);
+            var multisheet = ods.Sheets[1];
+            multisheet.GetCell("C5", cell =>
+            {
+                cell.Value = "Set after a reload";
+                cell.Bg = "#eeeeee";
+                cell.SpannedColumns = 4;
+                cell.TextAlign = TextAlign.Center;
+            });
+
+            multisheet.GetCell("C6", cell =>
+            {
+                cell.SpannedRows = 2;
+                cell.SpannedColumns = 2;
+            });
+
+            multisheet.BorderAround("C6:D7");
             multisheet.BorderAround("C5:F10");
 
             ods.Write(filePath);
-            Console.WriteLine("Done with test");
+        }
+
+        private static void TestReloadingShouldChangeNothing()
+        {
+            var ods = OpenDocument.Read<Spreadsheet>(filePath);
+            var filePath2 = filePath.Replace("genodf.ods", "genodf-reloaded.ods");
+            ods.Write(filePath2);
+            
+            if (!CompareFiles(filePath, filePath2))
+                throw new Exception("Reloaded file does not match original");
+        }
+
+        private static bool CompareFiles(string file1, string file2)
+        {
+            using (var fs1 = new FileStream(file1, FileMode.Open, FileAccess.Read))
+            using (var fs2 = new FileStream(file2, FileMode.Open, FileAccess.Read))
+            {
+                while (fs1.ReadByte() == fs2.ReadByte())
+                    if (fs1.Position == fs1.Length)
+                        return true;
+                return false;
+            }
         }
     }
 }
