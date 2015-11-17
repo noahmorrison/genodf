@@ -388,6 +388,11 @@ namespace Genodf
             Name = name;
         }
 
+        public IEnumerable<IEnumerable<string>> ExtractText()
+        {
+            return Rows.Select(row => row.Select(cell => cell.Value));
+        }
+
         public Cell SetCell(string a1, string value)
         {
             int column, row;
