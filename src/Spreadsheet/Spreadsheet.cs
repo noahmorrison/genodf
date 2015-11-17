@@ -190,27 +190,28 @@ namespace Genodf
                             #region Cell style
                             var xpath = string.Format("style:style[@style:name = \"{0}\"]", styleName);
                             var styleNode = styleRoot.SelectSingleNode(xpath, ns);
-                            foreach (XmlNode props in styleNode.ChildNodes) switch (props.Name)
-                            {
-                                case "style:paragraph-properties":
-                                    cell.ReadParagraphProps(props);
-                                    break;
-                                case "style:table-cell-properties":
-                                    cell.ReadTableCellProps(props);
-                                    break;
-                                case "style:text-properties":
-                                    cell.ReadTextProps(props);
-                                    break;
-                                case "style:map":
-                                    var cond = props.Attributes["style:condition"].Value;
-                                    var style = props.Attributes["style:apply-style-name"].Value;
+                            if (styleNode != null)
+                                foreach (XmlNode props in styleNode.ChildNodes) switch (props.Name)
+                                {
+                                    case "style:paragraph-properties":
+                                        cell.ReadParagraphProps(props);
+                                        break;
+                                    case "style:table-cell-properties":
+                                        cell.ReadTableCellProps(props);
+                                        break;
+                                    case "style:text-properties":
+                                        cell.ReadTextProps(props);
+                                        break;
+                                    case "style:map":
+                                        var cond = props.Attributes["style:condition"].Value;
+                                        var style = props.Attributes["style:apply-style-name"].Value;
 
-                                    cell.AddConditional(cond, style);
-                                    break;
+                                        cell.AddConditional(cond, style);
+                                        break;
 
-                                default:
-                                    throw new InvalidDataException("Invalid properties type");
-                            }
+                                    default:
+                                        throw new InvalidDataException("Invalid properties type");
+                                }
 
                             node.Attributes.IfHas("table:number-rows-spanned", value =>
                                 cell.SpannedRows = int.Parse(value));
@@ -219,21 +220,22 @@ namespace Genodf
                                 cell.SpannedColumns = int.Parse(value));
 
                             #region Cell format
-                            if (styleNode.Attributes["style:data-style-name"] != null)
-                            {
-                                var format = styleNode.Attributes["style:data-style-name"].Value;
-                                var autoStyles = ods.Content.DocumentElement.SelectSingleNode("//office:automatic-styles", ns);
-                                var globalStyles = ods.Style.DocumentElement.SelectSingleNode("//office:styles", ns);
+                            if (styleNode != null)
+                                if (styleNode.Attributes["style:data-style-name"] != null)
+                                {
+                                    var format = styleNode.Attributes["style:data-style-name"].Value;
+                                    var autoStyles = ods.Content.DocumentElement.SelectSingleNode("//office:automatic-styles", ns);
+                                    var globalStyles = ods.Style.DocumentElement.SelectSingleNode("//office:styles", ns);
 
-                                var xp = string.Format("number:number-style[@style:name = \"{0}\"] | " +
-                                                       "number:percentage-style[@style:name = \"{0}\"]",
-                                                       format);
+                                    var xp = string.Format("number:number-style[@style:name = \"{0}\"] | " +
+                                                           "number:percentage-style[@style:name = \"{0}\"]",
+                                                           format);
 
-                                var formatNode = autoStyles.SelectSingleNode(xp, ns);
-                                if (formatNode == null)
-                                    formatNode = globalStyles.SelectSingleNode(xp, ns);
-                                cell.Format = new NumberFormat(formatNode, search => { return autoStyles.SelectSingleNode(search, ns); });
-                            }
+                                    var formatNode = autoStyles.SelectSingleNode(xp, ns);
+                                    if (formatNode == null)
+                                        formatNode = globalStyles.SelectSingleNode(xp, ns);
+                                    cell.Format = new NumberFormat(formatNode, search => { return autoStyles.SelectSingleNode(search, ns); });
+                                }
                             #endregion
                             #endregion
                         });
