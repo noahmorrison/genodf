@@ -240,6 +240,13 @@ namespace Genodf
                             #endregion
                         });
 
+                        node.Attributes.IfHas("table:number-columns-repeated", value =>
+                        {
+                            var count = int.Parse(value) - 1;
+                            for (var i = 0; i < count; i++)
+                                row.Add(cell);
+                        });
+
                         row.Add(cell);
                         x++;
                     }
