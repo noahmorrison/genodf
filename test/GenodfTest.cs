@@ -86,6 +86,14 @@ namespace GenodfTest
             multisheet.SetCell("B1", "Fail");
             multisheet.GetCell("B1").AddConditional("cell-content()=\"Fail\"", "RedStyle");
 
+            ods.MasterPageStyle.PageLayout = new Genodf.Styles.PageLayoutStyle("PageLayout")
+            {
+                PageWidth = "11in",
+                PageHeight = "17in",
+                FitInPages = 1
+            };
+            ods.AddGlobalStyle(ods.MasterPageStyle.PageLayout);
+
             ods.Write(filePath);
         }
 

@@ -16,6 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="src\OpenDocument.cs" />
+    <Compile Include="src\Properties\PageLayoutProperties.cs" />
     <Compile Include="src\Properties\TableProperties.cs" />
     <Compile Include="src\Resources.cs" />
     <Compile Include="src\Spreadsheet\Cell.cs" />
@@ -30,6 +31,7 @@
     <Compile Include="src\Styles\Base.cs" />
     <Compile Include="src\Styles\CellStyle.cs" />
     <Compile Include="src\Styles\ColumnStyle.cs" />
+    <Compile Include="src\Styles\PageLayoutStyle.cs" />
     <Compile Include="src\Styles\MasterPageStyle.cs" />
     <Compile Include="src\Styles\TableStyle.cs" />
   </ItemGroup>

@@ -12,6 +12,8 @@ namespace Genodf.Styles
         string StyleName { get; set; }
         string StyleId { get; }
         void WriteStyle(XmlWriter xml);
+
+        bool AutomaticStyle { get; }
     }
 
     public class Base
@@ -21,6 +23,7 @@ namespace Genodf.Styles
 
         private Dictionary<string, string> conditions = new Dictionary<string, string>();
 
+        public virtual bool AutomaticStyle { get { return false; } }
         public string StyleName { get; set; }
         public string StyleId { get; private set; }
 

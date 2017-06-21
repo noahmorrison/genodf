@@ -62,9 +62,14 @@ namespace Genodf
                 xml.WriteEndElement();
                 xml.WriteEndElement();
 
-                foreach (var style in Styles)
+                foreach (var style in Styles.Where(s => !s.AutomaticStyle))
                     style.WriteStyle(xml);
 
+                xml.WriteEndElement();
+
+                xml.WriteStartElement("office:automatic-styles");
+                foreach (var style in Styles.Where(s => s.AutomaticStyle))
+                    style.WriteStyle(xml);
                 xml.WriteEndElement();
 
                 xml.WriteStartElement("office:master-styles");
@@ -262,6 +267,10 @@ namespace Genodf
             var globalStyle = ods.Style.DocumentElement.SelectSingleNode("//office:styles", ns);
             foreach (XmlNode node in globalStyle.SelectNodes("style:style", ns))
                 AddGlobalStyle(new CellStyle(node));
+
+            var automaticStyle = ods.Style.DocumentElement.SelectSingleNode("//office:automatic-styles", ns);
+            foreach (XmlNode node in automaticStyle.SelectNodes("style:page-layout", ns))
+                AddGlobalStyle(MasterPageStyle.PageLayout = new PageLayoutStyle(node));
             #endregion
         }
 

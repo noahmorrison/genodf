@@ -9,6 +9,8 @@ namespace Genodf.Styles
     public class MasterPageStyle : Base,
         IStyleable
     {
+        public PageLayoutStyle PageLayout;
+
         public MasterPageStyle(string name)
         {
             StyleName = name;
@@ -22,7 +24,7 @@ namespace Genodf.Styles
             xml.WriteStartElement("style:master-page");
 
             xml.WriteAttributeString("style:name", this.StyleId);
-            xml.WriteAttributeString("style:page-layout-name", "DefaultPageLayout");
+            xml.WriteAttributeString("style:page-layout-name", PageLayout?.StyleName ?? "default");
 
             xml.WriteEndElement();
         }
