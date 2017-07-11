@@ -26,12 +26,7 @@ namespace Genodf
         {
             get
             {
-                var contents = new StringBuilder();
-                var writer = new StringWriter(contents);
-
-                var xml = new XmlTextWriter(writer);
-                xml.Formatting = Formatting.Indented;
-
+                var xml = new XmlWriter();
                 xml.WriteStartElement("office:spreadsheet");
 
                 foreach (var table in Sheets)   
@@ -39,7 +34,7 @@ namespace Genodf
 
                 xml.WriteEndElement();  // </office:spreadsheet>
 
-                return contents.ToString();
+                return xml.ToString();
             }
         }
 
@@ -47,12 +42,7 @@ namespace Genodf
         {
             get
             {
-                var builder = new StringBuilder();
-                var writer = new StringWriter(builder);
-
-                var xml = new XmlTextWriter(writer);
-                xml.Formatting = Formatting.Indented;
-
+                var xml = new XmlWriter();
                 xml.WriteStartElement("office:styles");
 
                 xml.WriteStartElement("style:default-style");
@@ -76,7 +66,7 @@ namespace Genodf
                 MasterPageStyle.WriteStyle(xml);
                 xml.WriteEndElement();
 
-                return builder.ToString();
+                return xml.ToString();
             }
         }
 
@@ -84,12 +74,7 @@ namespace Genodf
         {
             get
             {
-                var style = new StringBuilder();
-                var writer = new StringWriter(style);
-
-                var xml = new XmlTextWriter(writer);
-                xml.Formatting = Formatting.Indented;
-
+                var xml = new XmlWriter();
                 // Generate empty styles
                 (new Column()).WriteStyle(xml);
                 (new Cell(0, 0)).WriteStyle(xml);
@@ -111,7 +96,7 @@ namespace Genodf
                         }
                 }
 
-                return style.ToString();
+                return xml.ToString();
             }
         }
 

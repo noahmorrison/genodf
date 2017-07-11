@@ -1,59 +1,15 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{EC40ACB0-A6B9-4776-9078-B1D72D244787}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>genodf</RootNamespace>
-    <AssemblyName>genodf</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <PackageTargetFallback>portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>build\</OutputPath>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="src\OpenDocument.cs" />
-    <Compile Include="src\Properties\PageLayoutProperties.cs" />
-    <Compile Include="src\Properties\TableProperties.cs" />
-    <Compile Include="src\Resources.cs" />
-    <Compile Include="src\Spreadsheet\Cell.cs" />
-    <Compile Include="src\Spreadsheet\Column.cs" />
-    <Compile Include="src\Spreadsheet\Spreadsheet.cs" />
-    <Compile Include="src\Properties\ParagraphProperties.cs" />
-    <Compile Include="src\Properties\TableCellProperties.cs" />
-    <Compile Include="src\Properties\TableColumnProperties.cs" />
-    <Compile Include="src\Properties\TextProperties.cs" />
-    <Compile Include="src\Formats\IFormat.cs" />
-    <Compile Include="src\Formats\Number.cs" />
-    <Compile Include="src\Styles\Base.cs" />
-    <Compile Include="src\Styles\CellStyle.cs" />
-    <Compile Include="src\Styles\ColumnStyle.cs" />
-    <Compile Include="src\Styles\PageLayoutStyle.cs" />
-    <Compile Include="src\Styles\MasterPageStyle.cs" />
-    <Compile Include="src\Styles\TableStyle.cs" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.1" />
+    <PackageReference Include="System.Xml.XPath.XmlDocument" Version="4.3.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>references\ICSharpCode.SharpZipLib.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="resources\content.xml">
       <LogicalName>content.xml</LogicalName>
@@ -65,5 +21,4 @@
       <LogicalName>styles.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -12,7 +12,7 @@ namespace GenodfTest
 
         public static void Main()
         {
-            var path = Assembly.GetExecutingAssembly().Location;
+            var path = typeof(GenodfTest).GetTypeInfo().Assembly.Location;
             var dir = Path.GetDirectoryName(path);
             filePath = Path.Combine(dir, "genodf.ods");
 

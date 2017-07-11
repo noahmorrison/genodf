@@ -1,10 +1,8 @@
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Xml;
-
-using ICSharpCode.SharpZipLib.Zip;
-
 
 namespace Genodf
 {
@@ -22,19 +20,23 @@ namespace Genodf
     {
         public static DocType Read<DocType>(string filePath) where DocType : IOpenDocument, new()
         {
-            using (var fstream = File.OpenRead(filePath))
-            using (var zip = new ZipFile(fstream))
+            using (var stream = File.OpenRead(filePath))
+            using (var zip = new ZipArchive(stream, ZipArchiveMode.Read))
             {
                 string mimetype;
+                DocumentFiles files;
 
-                using (var stream = zip.GetInputStream(zip.GetEntry("mimetype")))
-                using (var reader = new StreamReader(stream))
+                using (var entry = zip.GetEntry("mimetype").Open())
+                using (var reader = new StreamReader(entry))
+                {
                     mimetype = reader.ReadToEnd();
+                }
 
-                var content = zip.GetInputStream(zip.GetEntry("content.xml"));
-                var style = zip.GetInputStream(zip.GetEntry("styles.xml"));
-
-                var files = new DocumentFiles(mimetype, content, style);
+                using (var content = zip.GetEntry("content.xml").Open())
+                using (var style = zip.GetEntry("styles.xml").Open())
+                {
+                    files = new DocumentFiles(mimetype, content, style);
+                }
 
                 var odf = new DocType();
                 odf.Load(files);
@@ -45,7 +47,7 @@ namespace Genodf
 
     public static class OpenDocumentExtension
     {
-        public static void Write(this IOpenDocument doc, string filePath)
+        public static byte[] GetBytes(this IOpenDocument doc)
         {
             Genodf.Styles.Base.Reset();
             Genodf.NumberFormat.Reset();
@@ -54,35 +56,34 @@ namespace Genodf
             var content = Resources.Get("content.xml", doc.Style, doc.Body);
             var manifest = Resources.Get("manifest.xml", doc.Mimetype);
 
-            File.Delete(filePath);
-            using (var zip = new ZipOutputStream(File.Create(filePath)))
+            using (var stream = new MemoryStream())
             {
-                zip.UseZip64 = UseZip64.Off;
+                using (var zip = new ZipArchive(stream, ZipArchiveMode.Create, true))
+                {
+                    Add(zip, "mimetype", doc.Mimetype, CompressionLevel.NoCompression);
+                    Add(zip, "content.xml", content);
+                    Add(zip, "styles.xml", style);
+                    Add(zip, "META-INF/manifest.xml", manifest);
+                }
 
-                Add(zip, "mimetype", doc.Mimetype);
-                Add(zip, "content.xml", content);
-                Add(zip, "styles.xml", style);
-                Add(zip, "META-INF/manifest.xml", manifest);
-
-                zip.Finish();
-                zip.Close();
+                stream.Seek(0, SeekOrigin.Begin);
+                return stream.ToArray();
             }
         }
 
-        private static void Add(ZipOutputStream zip, string name, string data)
+        public static void Write(this IOpenDocument doc, string filePath)
         {
-            var entry = new ZipEntry(name);
+            File.Delete(filePath);
+            File.WriteAllBytes(filePath, doc.GetBytes());
+        }
 
-            if (name == "mimetype")
-                entry.CompressionMethod = CompressionMethod.Stored;
-
-            zip.PutNextEntry(entry);
-
-            var writer = new StreamWriter(zip);
-            writer.Write(data);
-
-            writer.Flush();
-            zip.CloseEntry();
+        private static void Add(ZipArchive zip, string name, string data, CompressionLevel level = CompressionLevel.Fastest)
+        {
+            using (var entry = zip.CreateEntry(name, level).Open())
+            using (var writer = new StreamWriter(entry))
+            {
+                writer.Write(data);
+            }
         }
     }
 

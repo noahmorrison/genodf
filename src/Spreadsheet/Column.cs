@@ -1,5 +1,4 @@
-﻿using System.Xml;
-using Genodf.Styles;
+﻿using Genodf.Styles;
 
 namespace Genodf
 {
