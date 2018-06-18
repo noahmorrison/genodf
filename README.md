@@ -6,11 +6,13 @@ Without the hassel of UNO.
 This project outputs a .NET dll.
 
 ---
-###TODO:###
+
+### TODO
 * More complete styling
 * More document types
 
 ---
-###References###
+
+### References
 This project uses [SharpZipLib](http://icsharpcode.github.io/SharpZipLib/)
 for cross-platform zipping.
