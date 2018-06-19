@@ -5,13 +5,15 @@ public static class Resources
 {
     public static string[] Names()
     {
-        return Assembly.GetExecutingAssembly()
-                       .GetManifestResourceNames();
+        return typeof(Resources)
+            .GetTypeInfo()
+            .Assembly
+            .GetManifestResourceNames();
     }
 
     public static string Get(string name, params string[] args)
     {
-        var assembly = Assembly.GetExecutingAssembly();
+        var assembly = typeof(Resources).GetTypeInfo().Assembly;
 
         using (Stream stream = assembly.GetManifestResourceStream(name))
         {

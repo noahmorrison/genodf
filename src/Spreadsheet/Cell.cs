@@ -1,5 +1,4 @@
-﻿using System.Xml;
-using Genodf.Styles;
+﻿using Genodf.Styles;
 
 namespace Genodf
 {
@@ -85,7 +84,7 @@ namespace Genodf
             switch (type)
             {
                 case "function":
-                    xml.WriteAttributeString("table:formula", "of:" + Value);
+                    xml.WriteAttributeString("table:formula", "of:" + Value.Replace(',', ';'));
                     break;
 
                 case "float":
