@@ -1,6 +1,6 @@
 # genodf
 C# project for generating
-[extended conformant ODF 1.2 files.](http://odf-validator.rhcloud.com/)
+[extended conformant ODF 1.2 files.](https://odfvalidator.org/)
 Without the hassel of UNO.
 
 This project outputs a .NET dll.
