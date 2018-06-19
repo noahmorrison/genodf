@@ -29,7 +29,7 @@ namespace Genodf
                 var xml = new XmlWriter();
                 xml.WriteStartElement("office:spreadsheet");
 
-                foreach (var table in Sheets)   
+                foreach (var table in Sheets)
                     WriteSheet(xml, table);
 
                 xml.WriteEndElement();  // </office:spreadsheet>
@@ -82,7 +82,7 @@ namespace Genodf
                 foreach (var sheet in Sheets)
                 {
                     sheet.WriteStyle(xml);
-                    
+
                     foreach (var column in sheet.Columns)
                         column.WriteStyle(xml);
 
