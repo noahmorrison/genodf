@@ -14,7 +14,7 @@ namespace Genodf
         public override string ToString()
         {
             var sb = new StringBuilder();
-            foreach (var element in elements) 
+            foreach (var element in elements)
             {
                 sb.Append(element.ToString());
             }
@@ -60,6 +60,15 @@ namespace Genodf
                 elementStack.Pop();
             }
         }
+
+        public void WriteValue(string value)
+        {
+            if (elementStack.Any()) {
+                elementStack.Peek().AddValue(value);
+            } else {
+                elements.Last().AddValue(value);
+            }
+        }
     }
 
     public class ElementWriter
@@ -73,6 +82,7 @@ namespace Genodf
         public ElementWriter(string name)
         {
             _name = name;
+            _value = "";
         }
 
         public ElementWriter(string name, string value)
@@ -89,6 +99,11 @@ namespace Genodf
         public void AddChild(ElementWriter child)
         {
             _children.Add(child);
+        }
+
+        public void AddValue(string value)
+        {
+            _value += value;
         }
 
         public override string ToString()

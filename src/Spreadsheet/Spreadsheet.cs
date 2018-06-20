@@ -100,6 +100,19 @@ namespace Genodf
             }
         }
 
+        public string Settings
+        {
+            get
+            {
+                var xml = new XmlWriter();
+                foreach (var sheet in Sheets)
+                {
+                    WriteSettings(xml, sheet);
+                }
+                return xml.ToString();
+            }
+        }
+
         public Spreadsheet()
         {
             Sheets = new List<Sheet>();
@@ -340,9 +353,22 @@ namespace Genodf
                 xml.WriteElementString("table:table-cell", "");
                 xml.WriteEndElement();
             }
-
-            foreach (var row in sheet.Rows)
+            else
             {
+                if (sheet.PrintingHeader != null)
+                {
+                    xml.WriteStartElement("table:table-header-rows");
+                }
+            }
+
+            for (var i = 0; i < sheet.Rows.Count; i++)
+            {
+                var row = sheet.Rows[i];
+                if (sheet.PrintingHeader?.Height == i)
+                {
+                    xml.WriteEndElement(); // </table:table-header-rows>
+                }
+
                 xml.WriteStartElement("table:table-row");
 
                 bool hasChild = false;
@@ -362,11 +388,48 @@ namespace Genodf
             }
             xml.WriteEndElement();  // </table:table>
         }
+
+        private void WriteSettings(XmlWriter xml, Sheet sheet)
+        {
+            if (sheet.VisualHeader == null) return;
+
+            xml.WriteStartElement("config:config-item-map-entry");
+            xml.WriteAttributeString("config:name", sheet.Name);
+
+            if (sheet.VisualHeader != null)
+            {
+                var left = sheet.VisualHeader.Width.ToString();
+                WriteConfigItem(xml, "HorizontalSplitMode", "short", "2");
+                WriteConfigItem(xml, "HorizontalSplitPosition", "int", left);
+                WriteConfigItem(xml, "PositionRight", "int", left);
+
+                var top = sheet.VisualHeader.Height.ToString();
+                WriteConfigItem(xml, "VerticalSplitMode", "short", "2");
+                WriteConfigItem(xml, "VerticalSplitPosition", "int", top);
+                WriteConfigItem(xml, "PositionBottom", "int", top);
+            }
+
+            xml.WriteEndElement(); // </config:config-item-map-entry>
+        }
+
+        private void WriteConfigItem(XmlWriter xml, string name, string type, string data)
+        {
+            xml.WriteStartElement("config:config-item");
+            xml.WriteAttributeString("config:name", name);
+            xml.WriteAttributeString("config:type", type);
+
+            xml.WriteValue(data);
+
+            xml.WriteEndElement(); // </config:config-item>
+        }
     }
 
     public class Sheet : TableStyle
     {
         public string Name = "Sheet";
+
+        public Header PrintingHeader;
+        public Header VisualHeader;
 
         public List<List<Cell>> Rows { get; private set; }
         public List<Column> Columns { get; private set; }

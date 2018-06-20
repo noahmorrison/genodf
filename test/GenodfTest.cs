@@ -17,8 +17,6 @@ namespace GenodfTest
             filePath = Path.Combine(dir, "genodf.ods");
 
             TestWriting();
-            TestReloading();
-            TestReloadingShouldChangeNothing();
 
             Console.WriteLine("Done with test");
         }
@@ -27,6 +25,8 @@ namespace GenodfTest
         {
             var ods = new Spreadsheet();
             var sheet = ods.NewSheet("Genodf Test");
+            sheet.PrintingHeader = new Header(height: 2);
+            sheet.VisualHeader = new Header(height: 2);
 
             sheet.SetCell("A1", "2.5");
             sheet.SetCell("B1", "3.5");

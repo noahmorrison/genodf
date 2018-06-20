@@ -13,6 +13,8 @@ namespace Genodf
         string Style { get; }
         string GlobalStyle { get; }
 
+        string Settings { get; }
+
         void Load(DocumentFiles files);
     }
 
@@ -55,6 +57,7 @@ namespace Genodf
             var style = Resources.Get("styles.xml", doc.GlobalStyle);
             var content = Resources.Get("content.xml", doc.Style, doc.Body);
             var manifest = Resources.Get("manifest.xml", doc.Mimetype);
+            var settings = Resources.Get("settings.xml", doc.Settings);
 
             using (var stream = new MemoryStream())
             {
@@ -64,6 +67,7 @@ namespace Genodf
                     Add(zip, "content.xml", content);
                     Add(zip, "styles.xml", style);
                     Add(zip, "META-INF/manifest.xml", manifest);
+                    Add(zip, "settings.xml", settings);
                 }
 
                 stream.Seek(0, SeekOrigin.Begin);

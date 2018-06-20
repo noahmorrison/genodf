@@ -19,6 +19,9 @@
     <EmbeddedResource Include="resources\styles.xml">
       <LogicalName>styles.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="resources\settings.xml">
+      <LogicalName>settings.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
   <PropertyGroup>
